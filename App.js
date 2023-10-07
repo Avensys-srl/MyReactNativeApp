@@ -35,6 +35,9 @@ import BleManager, {
   Peripheral,
 } from 'react-native-ble-manager';
 import { Device } from 'react-native-ble-plx';
+
+import { TextDecoder } from 'text-encoding';
+
 const BleManagerModule = NativeModules.BleManager;
 const bleManagerEmitter = new NativeEventEmitter(BleManagerModule);
 
@@ -174,35 +177,32 @@ const App = () => {
 
         if (peripheralData.characteristics) {
           for (let characteristic of peripheralData.characteristics) {
-            if (characteristic.descriptors) {
-              for (let descriptor of characteristic.descriptors) {
-                try {
-                  let data = await BleManager.readDescriptor(
-                    peripheral.id,
-                    characteristic.service,
-                    characteristic.characteristic,
-                    descriptor.uuid,
-                  );
-                  console.debug(
-                    `[connectPeripheral][${peripheral.id}] descriptor read as:`,
-                    data,
-                  );
-                } catch (error) {
 
-                  if (error.errorCode === 128) {
-                    // Fai qualcosa specifico per l'errore 128
-                    console.log('Errore 128: La lettura del descrittore ha avuto esito negativo.');
-                  }
-                  else
-                    {
-                    console.error(
-                      `[connectPeripheral][${peripheral.id}] failed to retrieve descriptor ${descriptor.uuid} for service ${characteristic.service} characteristic ${characteristic.characteristic}:`,
-                      error,
-                    );
-                  }
-                }
+            if(characteristic.characteristic === "ff01" ){
+              try {
+                let data = await BleManager.read(
+                  peripheral.id,
+                  characteristic.service,
+                  characteristic.characteristic,
+                );
+               
+                const decoder = new TextDecoder('utf-8');
+                items = new Uint8Array(data);
+                SerialNumber = decoder.decode(items);
+
+                console.debug(
+                  `[connectPeripheral][${peripheral.id}] characteristic ${characteristic.characteristic} value read as:`,
+                  SerialNumber,
+                );
+              } catch (error) {
+
+                  console.error(
+                    `[connectPeripheral][${peripheral.id}] failed to retrieve data for service ${characteristic.service} and characteristic ${characteristic.characteristic}:`,
+                    error,
+                  );
               }
             }
+
           }
         }
 
