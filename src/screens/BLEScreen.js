@@ -1,7 +1,7 @@
 /**
  * Sample BLE React Native App
  */
-
+/*
 import React, {useState, useEffect} from 'react';
 import {
   SafeAreaView,
@@ -48,6 +48,7 @@ Polling_data_BLE = new Uint8Array();
 
 const BLESCreen = () => {
   const [isScanning, setIsScanning] = useState(false);
+  const [isReading, setIsReading] = useState(false);
   const [peripherals, setPeripherals] = useState(new Map());
 
   console.debug('peripherals map updated', [...peripherals.entries()]);
@@ -128,6 +129,37 @@ const BLESCreen = () => {
       await connectPeripheral(peripheral);
     }
   };
+
+  const readCharacteristic = async () => {
+    setIsReading(true);
+    try {
+      devicefound = await BleManager.getConnectedPeripherals();
+      if (devicefound.length === 0) {
+        console.warn('[readCharacteristic] No connected peripherals found.');
+        return;
+      }
+
+      console.debug('[readCharacteristic] connectedPeripherals', devicefound);
+
+      for (var i = 0; i < devicefound.length; i++) {
+        var peripheral = devicefound[i];
+      }
+    } catch (error) {
+      console.error(
+        '[readCharacteristic] unable to retrieve connected peripherals.',
+        error,
+      );
+    }
+    setIsReading(false);
+  };
+
+  const checkdata = () => {
+    if (!isReading || !isScanning) {
+      readCharacteristic();
+    }
+  };
+
+  // setInterval(checkdata, 10000);
 
   const retrieveConnected = async () => {
     try {
@@ -427,3 +459,39 @@ const BLESCreen = () => {
 };
 
 export default BLESCreen;
+
+
+*/
+
+import React from 'react';
+import {SafeAreaView, ScrollView, Pressable, Text} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
+
+import styles from '../styles/styles.js';
+
+import BLEReader from './BLEReader.js';
+
+const bluetooth = new BLEReader();
+
+function BLEScreen() {
+  bluetooth.componentDidMount();
+  const navigation = useNavigation();
+
+  const goToInfo = () => {
+    navigation.navigate('InfoScreen');
+  };
+
+  return (
+    <>
+      <SafeAreaView style={styles.body}>
+        <ScrollView>
+          <Pressable style={styles.scanButton} onPress={goToInfo}>
+            <Text style={styles.scanButtonText}>{'Check Data'}</Text>
+          </Pressable>
+        </ScrollView>
+      </SafeAreaView>
+    </>
+  );
+}
+
+export default BLEScreen;
