@@ -470,11 +470,14 @@ import {useNavigation} from '@react-navigation/native';
 import styles from '../styles/styles.js';
 
 import BLEReader from './BLEReader.js';
+import SingleButton from '../icons/SingleButton.js';
+import CustomBottomNavigation from '../icons/CustomBottomNavigation.js';
 
 const bluetooth = new BLEReader();
 
 function BLEScreen() {
   bluetooth.componentDidMount();
+
   const navigation = useNavigation();
 
   const goToInfo = () => {
@@ -482,15 +485,21 @@ function BLEScreen() {
   };
 
   return (
-    <>
-      <SafeAreaView style={styles.body}>
-        <ScrollView>
-          <Pressable style={styles.scanButton} onPress={goToInfo}>
-            <Text style={styles.scanButtonText}>{'Check Data'}</Text>
-          </Pressable>
-        </ScrollView>
-      </SafeAreaView>
-    </>
+    <SafeAreaView style={styles.body}>
+      <ScrollView>
+        <Pressable style={styles.scanButton} onPress={goToInfo}>
+          <Text style={styles.scanButtonText}>{'Check Data'}</Text>
+        </Pressable>
+        <SingleButton></SingleButton>
+        <CustomBottomNavigation
+          HI={require('../assets/file-plus-icon-original.svg')}
+          PI={require('../assets/file-plus-icon-original.svg')}
+          SI={require('../assets/file-plus-icon-original.svg')}
+          II={require('../assets/file-plus-icon-original.svg')}
+          OC={0}
+        />
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 

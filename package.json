@@ -23,7 +23,9 @@
     "react-native-screens": "^3.25.0",
     "react-native-share": "^9.4.1",
     "react-native-svg": "^13.14.0",
+    "react-native-svg-uri": "^1.2.3",
     "react-native-view-shot": "^3.7.0",
+    "react-native-webview": "^13.6.2",
     "text-encoding": "^0.7.0"
   },
   "devDependencies": {

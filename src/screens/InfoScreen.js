@@ -1,9 +1,8 @@
 // Importa le librerie necessarie
 import React, {Component} from 'react';
 import {View, Text, SafeAreaView, ScrollView, Pressable} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
 import styles from '../styles/styles.js';
-import QRCodeGeneratorWithSharing from './QRCodeGeneratorWithSharing.js';
+import QRCodeGeneratorWithSharing from '../icons/QRCodeGeneratorWithSharing.js';
 import {eepromData, debugData, pollingData} from '../function/Data.js';
 import InfoText from '../icons/Controls.js';
 
@@ -12,14 +11,13 @@ class InfoScreen extends Component {
     super(props);
 
     this.state = {
-      eepromlist: [], // Array iniziale
+      eepromlist: [],
       debuglist: [],
       pollinglist: [],
     };
   }
 
   componentDidMount() {
-    // Avvia un intervallo per aggiornare il valore ogni 2 secondi
     this.updateInterval = setInterval(() => {
       const eepromlistcopy = [];
       const debuglistcopy = [];
@@ -59,14 +57,11 @@ class InfoScreen extends Component {
     clearInterval(this.updateInterval);
   }
 
-  // Definisci il componente InfoScreen
+  navigateToScreen = () => {
+    this.props.navigation.navigate('BLEScreen');
+  };
+
   render() {
-    const {navigation} = this.props;
-
-    //   console.debug(`Eeprom value read as:`, eepromData);
-    //   console.debug(`Debug value read as:`, debugData);
-    //   console.debug(`Polling value read as:`, pollingData);
-
     return (
       <SafeAreaView style={styles.body}>
         <ScrollView>
@@ -79,9 +74,7 @@ class InfoScreen extends Component {
           <View>
             <QRCodeGeneratorWithSharing inputString={eepromData.SerialString} />
           </View>
-          <Pressable
-            style={styles.scanButton}
-            onPressonPress={() => navigation.navigate('BLEScreen')}>
+          <Pressable style={styles.scanButton} onPress={this.navigateToScreen}>
             <Text style={styles.scanButtonText}>{'Back'}</Text>
           </Pressable>
         </ScrollView>
@@ -91,11 +84,3 @@ class InfoScreen extends Component {
 }
 
 export default InfoScreen;
-
-/*  
-        <Text style={styles.sectionDescription}>{'EEPROM DATA'}</Text>
-        <View>{eepromlist}</View>
-        <Text style={styles.sectionDescription}>{'DEBUG DATA'}</Text>
-      ' <View>{debuglist}</View>
-
-*/
