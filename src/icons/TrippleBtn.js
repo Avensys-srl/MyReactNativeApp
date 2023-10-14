@@ -1,4 +1,4 @@
-import {Pressable, StyleSheet, Text, View} from 'react-native';
+import {Pressable, Text, View} from 'react-native';
 import React, {useState, useEffect} from 'react';
 
 const TrippleBtn = ({TBL, TBC, TBR}) => {
@@ -89,5 +89,4 @@ const TrippleBtn = ({TBL, TBC, TBR}) => {
   );
 };
 
-const styles = StyleSheet.create({});
 export default TrippleBtn;
