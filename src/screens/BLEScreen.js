@@ -13,14 +13,20 @@ import CircleProgressBar from '../icons/CircleProgressBar.js';
 import ChangeStatusBtn from '../icons/ChangeStatusBtn.js';
 import VerticalProgressBar from '../icons/VerticalProgressBar.js';*/
 import CountdownProgressBar from '../icons/CountdownProgressBar.js';
-import {eepromData} from '../function/Data.js';
+import {eepromData, pollingData, debugData} from '../function/Data.js';
+import InfoText from '../icons/Controls.js';
 
 class BLEScreen extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      address: 0,
+      TR: 0,
+      TS: 0,
+      TF: 0,
+      TE: 0,
+      speedR: 0,
+      speedF: 0,
       isFirstCycle: true,
       airflow: 0,
     };
@@ -32,7 +38,14 @@ class BLEScreen extends Component {
   componentDidMount() {
     this.updateInterval = setInterval(() => {
       this.setState({
-        address: eepromData.AddrUnit,
+        TR: pollingData.MeasTemp2R,
+        TS: pollingData.MeasTemp3S,
+        TF: pollingData.MeasTemp1F,
+        TE: pollingData.MeasTemp4E,
+        speedF: debugData.SpeedMotorF1,
+        speedR: debugData.SpeedMotorR1,
+        Vr: debugData.VoutMotorR,
+        Vf: debugData.VoutMotorF,
       });
 
       if (
@@ -45,12 +58,7 @@ class BLEScreen extends Component {
         });
       }
 
-      console.debug(
-        'verifico',
-        this.state.airflow,
-        this.state.isFirstCycle,
-        this.state.address,
-      );
+      console.debug('verifico', this.state.airflow, this.state.isFirstCycle);
     }, 1000);
   }
 
@@ -64,7 +72,7 @@ class BLEScreen extends Component {
 
   handleProgressBarChange = newValue => {
     // Esegui le azioni desiderate quando il valore cambia, ad esempio, aggiorna lo stato di BLEScreen
-    console.debug('Nuovo valore barra:', newValue);
+    // bconsole.debug('Nuovo valore barra:', newValue);
     eepromData.Set_StepMotorsFSC_CAF4 = newValue * 1000;
     this.setState({airflow: eepromData.Set_StepMotorsFSC_CAF4 / 10});
 
@@ -74,7 +82,7 @@ class BLEScreen extends Component {
   render() {
     console.debug('render', this.state.airflow);
 
-    if (this.state.address <= 0 && this.state.isFirstCycle == true) {
+    if (this.state.airflow <= 0 && this.state.isFirstCycle == true) {
       return (
         <View>
           <Text>{'Loading data...'}</Text>
@@ -95,6 +103,30 @@ class BLEScreen extends Component {
             init_val={this.state.airflow / 100}
             onValueChange={this.handleProgressBarChange}></CountdownProgressBar>
         </ScrollView>
+        <InfoText
+          descr={'Return Temperature'}
+          value={this.state.TR / 10 + ' °C'}
+        />
+        <InfoText
+          descr={'Fresh Temperature'}
+          value={this.state.TF / 10 + ' °C'}
+        />
+        <InfoText
+          descr={'Supply Temperature'}
+          value={this.state.TS / 10 + ' °C'}
+        />
+        <InfoText
+          descr={'Exhaust Temperature'}
+          value={this.state.TE / 10 + ' °C'}
+        />
+        <InfoText
+          descr={'Speed Fan Fresh/Supply'}
+          value={Array(this.state.speedF + ' RPM', this.state.Vf / 100 + ' V')}
+        />
+        <InfoText
+          descr={'Speed Fan Return/Exhaust'}
+          value={Array(this.state.speedR + ' RPM', this.state.Vr / 100 + ' V')}
+        />
       </SafeAreaView>
     );
   }

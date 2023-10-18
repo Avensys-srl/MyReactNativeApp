@@ -2,7 +2,7 @@ import React from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 
 function InfoText({descr, value}) {
-  const formattedValue = Array.isArray(value) ? value.join(', ') : value;
+  const formattedValue = Array.isArray(value) ? value.join(' - ') : value;
 
   return (
     <View style={styles.row}>

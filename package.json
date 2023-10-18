@@ -11,7 +11,8 @@
   },
   "dependencies": {
     "@ptomasroos/react-native-multi-slider": "^2.2.2",
-    "@react-navigation/native": "^6.0.0",
+    "@react-navigation/bottom-tabs": "^6.5.9",
+    "@react-navigation/native": "^6.1.8",
     "@react-navigation/native-stack": "^6.9.14",
     "react": "18.2.0",
     "react-native": "0.72.5",

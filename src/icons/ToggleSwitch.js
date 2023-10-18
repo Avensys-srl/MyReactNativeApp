@@ -3,9 +3,6 @@ import {View, TouchableOpacity, StyleSheet, Text} from 'react-native';
 
 const ToggleSwitch = ({TOO, CL, CR, BG}) => {
   const [isWifi, setIsWifi] = useState(true);
-  // const TOO = 'Communication';
-  // const CL = 'wifi';
-  // const CR = 'BT';
 
   const handleToggle = () => {
     setIsWifi(!isWifi);
@@ -14,40 +11,40 @@ const ToggleSwitch = ({TOO, CL, CR, BG}) => {
   return (
     <View
       style={{
-        justifyContent: 'top',
+        justifyContent: 'center',
         alignItems: 'center',
-        flex: 1,
+        width: '100%',
+        height: '100%',
       }}>
-      <Text style={{textAlign: 'center', marginBottom: 8}}>{TOO}</Text>
+      
       <TouchableOpacity style={styles.container} onPress={handleToggle}>
         <View
           style={[
             styles.circle,
             isWifi ? styles.leftCircle : styles.rightCircle,
-            BG == 0
-              ? {backgroundColor: '#4CAF50'}
-              : BG == 1
-              ? {backgroundColor: 'orange'}
-              : {backgroundColor: 'red'},
+            BG == 0 ? {backgroundColor: '#4CAF50'} : BG == 1 ? {backgroundColor: 'white'} : {backgroundColor: 'red'}
           ]}
         />
       </TouchableOpacity>
       <View
         style={{
-          justifyContent: 'space-between',
+          justifyContent:'space-between',
           flexDirection: 'row',
-          width: 150,
+          width: 250,
         }}>
         <Text>{CL}</Text>
         <Text>{CR}</Text>
       </View>
+      <Text style={{textAlign: 'center'}}>{TOO}</Text>
+      
+     
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    width: 150,
+    width: 250,
     height: 20,
     borderRadius: 10,
     backgroundColor: 'white',
@@ -55,6 +52,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     flexDirection: 'row',
     overflow: 'hidden',
+    marginTop:30
   },
   circle: {
     width: 20,
