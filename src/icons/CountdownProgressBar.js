@@ -2,7 +2,13 @@ import React, {useState} from 'react';
 import {View, Text, PanResponder, StyleSheet} from 'react-native';
 import * as Progress from 'react-native-progress';
 
-const CountdownProgressBar = ({label, min_val, max_val, init_val}) => {
+const CountdownProgressBar = ({
+  label,
+  min_val,
+  max_val,
+  init_val,
+  onValueChange,
+}) => {
   const [progress, setProgress] = useState(init_val);
 
   const mv = min_val;
@@ -14,7 +20,11 @@ const CountdownProgressBar = ({label, min_val, max_val, init_val}) => {
     const touchX = Math.min(progressBarWidth, Math.max(0, gestureState.moveX));
     const newProgress = touchX / progressBarWidth;
 
-    setProgress(newProgress);
+    setProgress(newProgress.toPrecision(2));
+
+    if (onValueChange) {
+      onValueChange(newProgress.toPrecision(2));
+    }
   };
 
   const panResponder = PanResponder.create({
@@ -25,7 +35,13 @@ const CountdownProgressBar = ({label, min_val, max_val, init_val}) => {
   const filledWidth = 280 * progress;
 
   return (
-    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+    <View
+      style={{
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        margin: 10,
+      }}>
       <Text style={{marginBottom: 12}}>{rv}</Text>
       <View {...panResponder.panHandlers}>
         <Progress.Bar
@@ -42,7 +58,7 @@ const CountdownProgressBar = ({label, min_val, max_val, init_val}) => {
           <Text>{mv}</Text>
           <Text>{Xv}</Text>
           <Text style={{position: 'absolute', left: filledWidth, bottom: -10}}>
-            {`${Math.round(progress * (max_val-min_val) + min_val)}`}
+            {`${Math.round(progress * (max_val - min_val) + min_val)}`}
           </Text>
         </View>
       </View>

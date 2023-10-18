@@ -58,6 +58,7 @@ class BLEReader extends Component {
             );
             parseUint8ArrayToEEPROM(data);
             this.characteristicValue = data;
+            console.debug('letto');
           } catch (error) {
             console.error('Errore nella lettura della caratteristica:', error);
             this.scheduleNextRead();

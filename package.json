@@ -10,6 +10,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@ptomasroos/react-native-multi-slider": "^2.2.2",
     "@react-navigation/native": "^6.0.0",
     "@react-navigation/native-stack": "^6.9.14",
     "react": "18.2.0",
@@ -23,7 +24,7 @@
     "react-native-screens": "^3.25.0",
     "react-native-share": "^9.4.1",
     "react-native-svg": "^13.14.0",
-    "react-native-svg-uri": "^1.2.3",
+    "react-native-svg-uri": "^0.0.1",
     "react-native-view-shot": "^3.7.0",
     "react-native-webview": "^13.6.2",
     "text-encoding": "^0.7.0"

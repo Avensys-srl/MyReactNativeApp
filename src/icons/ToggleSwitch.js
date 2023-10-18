@@ -14,10 +14,9 @@ const ToggleSwitch = ({TOO, CL, CR, BG}) => {
   return (
     <View
       style={{
-        justifyContent: 'center',
+        justifyContent: 'top',
         alignItems: 'center',
-        width: '100%',
-        height: '100%',
+        flex: 1,
       }}>
       <Text style={{textAlign: 'center', marginBottom: 8}}>{TOO}</Text>
       <TouchableOpacity style={styles.container} onPress={handleToggle}>
@@ -25,7 +24,11 @@ const ToggleSwitch = ({TOO, CL, CR, BG}) => {
           style={[
             styles.circle,
             isWifi ? styles.leftCircle : styles.rightCircle,
-            BG == 0 ? {backgroundColor: '#4CAF50'} : BG == 1 ? {backgroundColor: 'orange'} : {backgroundColor: 'red'}
+            BG == 0
+              ? {backgroundColor: '#4CAF50'}
+              : BG == 1
+              ? {backgroundColor: 'orange'}
+              : {backgroundColor: 'red'},
           ]}
         />
       </TouchableOpacity>
@@ -33,7 +36,7 @@ const ToggleSwitch = ({TOO, CL, CR, BG}) => {
         style={{
           justifyContent: 'space-between',
           flexDirection: 'row',
-          width: 150
+          width: 150,
         }}>
         <Text>{CL}</Text>
         <Text>{CR}</Text>

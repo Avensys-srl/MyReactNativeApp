@@ -52,6 +52,7 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     color: Colors.dark,
     textAlign: 'center',
+    marginBottom: 8,
   },
   highlight: {
     fontWeight: '700',
@@ -90,6 +91,12 @@ const styles = StyleSheet.create({
     margin: 10,
     textAlign: 'center',
     color: Colors.white,
+  },
+  BtnText: {
+    fontSize: 16,
+    fontWeight: '400',
+    color: Colors.dark,
+    textAlign: 'center',
   },
 });
 

@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, PanResponder, StyleSheet } from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {View, Text, PanResponder, StyleSheet} from 'react-native';
 
-const CountdownProgressBar = ({ TSB, TSL, TSR, RIV, BG }) => {
+const CircleProgressBar = ({TSB, TSL, TSR, RIV, BG}) => {
   const progressBarWidth = 300;
   const circleSize = 19;
   const progressBarHeight = 21;
@@ -52,8 +52,8 @@ const CountdownProgressBar = ({ TSB, TSL, TSR, RIV, BG }) => {
   const filledWidth = progressBarWidth * progress;
 
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text style={{ marginBottom: 12 }}>{TSB}</Text>
+    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+      <Text style={{marginBottom: 12}}>{TSB}</Text>
       <View {...panResponder.panHandlers}>
         <View
           style={{
@@ -79,10 +79,10 @@ const CountdownProgressBar = ({ TSB, TSL, TSR, RIV, BG }) => {
             }}
           />
         </View>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
           <Text>{TSL}</Text>
           <Text>{TSR}</Text>
-          <Text style={{ position: 'absolute', left: filledWidth, bottom: -10 }}>
+          <Text style={{position: 'absolute', left: filledWidth, bottom: -10}}>
             {`${Math.round(progress * (TSR - TSL) + TSL)}`}
           </Text>
         </View>
@@ -93,4 +93,4 @@ const CountdownProgressBar = ({ TSB, TSL, TSR, RIV, BG }) => {
 
 const styles = StyleSheet.create({});
 
-export default CountdownProgressBar;
+export default CircleProgressBar;

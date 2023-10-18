@@ -1,15 +1,25 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { View, TouchableOpacity, Text, PanResponder, StyleSheet, Image } from 'react-native';
-import Svg, { Rect } from 'react-native-svg';
+import React, {useState, useRef, useEffect} from 'react';
+import {
+  View,
+  TouchableOpacity,
+  Text,
+  PanResponder,
+  StyleSheet,
+  Image,
+} from 'react-native';
+import Svg, {Rect} from 'react-native-svg';
 
-const VerticalProgressBar = ({ FSI, VS, TS, BG }) => {
-  const [progress, setProgress] = useState(VS/100);
+const VerticalProgressBar = ({FSI, VS, TS, BG}) => {
+  const [progress, setProgress] = useState(VS / 100);
 
   const panResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
       onPanResponderMove: (_, gestureState) => {
-        const newProgress = Math.max(0, Math.min(1, 1 - gestureState.moveY / 150));
+        const newProgress = Math.max(
+          0,
+          Math.min(1, 1 - gestureState.moveY / 150),
+        );
         setProgress(newProgress);
       },
     }),
@@ -32,7 +42,10 @@ const VerticalProgressBar = ({ FSI, VS, TS, BG }) => {
     <View style={styles.container}>
       <Text>{TS}</Text>
       <TouchableOpacity onPress={increaseProgress} style={styles.button}>
-        <Image source={require('../assets/fan.png')} style={{ height: 40, width: 40 }} />
+        <Image
+          source={require('../assets/sun.png')}
+          style={{height: 40, width: 40}}
+        />
       </TouchableOpacity>
       <View style={styles.progressBarContainer} {...panResponder.panHandlers}>
         <Svg width={barWidth} height={150}>
@@ -52,7 +65,10 @@ const VerticalProgressBar = ({ FSI, VS, TS, BG }) => {
         </Svg>
       </View>
       <TouchableOpacity onPress={decreaseProgress} style={styles.button}>
-        <Image source={require('../assets/fan.png')} style={{ height: 30, width: 30 }} />
+        <Image
+          source={require('../assets/sun.png')}
+          style={{height: 30, width: 30}}
+        />
       </TouchableOpacity>
       <Text style={styles.percentageText}>{percentage}%</Text>
       <View style={styles.buttonContainer}></View>

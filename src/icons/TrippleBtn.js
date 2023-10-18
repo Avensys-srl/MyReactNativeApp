@@ -1,5 +1,6 @@
 import {Pressable, Text, View} from 'react-native';
 import React, {useState, useEffect} from 'react';
+import styles from '../styles/styles';
 
 const TrippleBtn = ({TBL, TBC, TBR}) => {
   const [firstContainer, setFirstContainer] = useState('white');
@@ -26,9 +27,8 @@ const TrippleBtn = ({TBL, TBC, TBR}) => {
     <View
       style={{
         justifyContent: 'center',
-        alignItems: 'center',
-        width: '100%',
-        height: '100%',
+        alignItems: 'top',
+        flex: 1,
         flexDirection: 'row',
       }}>
       <Pressable
@@ -46,7 +46,7 @@ const TrippleBtn = ({TBL, TBC, TBR}) => {
             borderColor: '#000000',
             borderRadius: 12,
           }}>
-          <Text>FSC</Text>
+          <Text style={styles.BtnText}>{TBL}</Text>
         </View>
       </Pressable>
       <Pressable
@@ -63,8 +63,10 @@ const TrippleBtn = ({TBL, TBC, TBR}) => {
             borderWidth: 1,
             borderColor: '#000000',
             borderRadius: 12,
+            fontSize: 16,
+            fontWeight: '400',
           }}>
-          <Text>CAP</Text>
+          <Text style={styles.BtnText}>{TBC}</Text>
         </View>
       </Pressable>
       <Pressable
@@ -81,8 +83,10 @@ const TrippleBtn = ({TBL, TBC, TBR}) => {
             borderWidth: 1,
             borderColor: '#000000',
             borderRadius: 12,
+            fontSize: 16,
+            fontWeight: '400',
           }}>
-          <Text>CAF</Text>
+          <Text style={styles.BtnText}>{TBR}</Text>
         </View>
       </Pressable>
     </View>
