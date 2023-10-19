@@ -73,7 +73,12 @@ class EEPROM_DATA_TAG {
     this.Set_MBF_return = 0;
     this.SetPoint_Airflow_CO2 = 0;
     this.cntUpdate_SettingPar = 0;
-    this.Calibr = 0;
+    this.Calibr1 = 0;
+    this.Calibr2 = 0;
+    this.Calibr3 = 0;
+    this.Calibr4 = 0;
+    this.Calibr5 = 0;
+    this.Calibr6 = 0;
     this.Bypass_minTempExt = 0;
     this.SetPointTemp1 = 0;
     this.SetPointTemp2 = 0;
@@ -95,6 +100,36 @@ class EEPROM_DATA_TAG {
     this.cntUpdate_dayProg = 0;
     this.none = 0;
     this.version_eeprom = 0;
+
+    this.previousState = this.serialize();
+  }
+
+  serialize() {
+    // Serializza l'oggetto corrente in una stringa JSON
+    const {previousState, ...currentState} = this;
+    return JSON.stringify(currentState);
+  }
+
+  hasValueChanged() {
+    // Serializza l'oggetto corrente, escludendo la proprietà 'previousState'
+    const {previousState, ...currentState} = this;
+    const currentSerialized = JSON.stringify(currentState);
+
+    // Confronta lo stato corrente con lo stato precedente
+    return currentSerialized !== this.previousState;
+  }
+
+  updatePreviousState() {
+    this.previousState = this.serialize();
+  }
+
+  hasAllValuesEqualToZero() {
+    for (const key in this) {
+      if (typeof this[key] !== 'function' && this[key] !== 0) {
+        return false;
+      }
+    }
+    return true;
   }
 }
 

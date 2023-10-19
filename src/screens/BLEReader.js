@@ -5,7 +5,10 @@ import {
   parseUint8ArrayToEEPROM,
   parseUint8ArrayToDebug,
   parseUint8ArrayToPolling,
+  convertEEPROMToUint8Array,
+  convertUint8ArrayToByteArray,
 } from '../function/Parsing.js';
+import {eepromData} from '../function/Data.js';
 
 class BLEReader extends Component {
   constructor(props) {
@@ -50,18 +53,58 @@ class BLEReader extends Component {
     if (peripheralData.characteristics) {
       for (let characteristic of peripheralData.characteristics) {
         if (characteristic.characteristic === 'ff01') {
-          try {
-            let data = await BleManager.read(
-              device,
-              characteristic.service,
-              characteristic.characteristic,
-            );
-            parseUint8ArrayToEEPROM(data);
-            this.characteristicValue = data;
-            console.debug('letto');
-          } catch (error) {
-            console.error('Errore nella lettura della caratteristica:', error);
-            this.scheduleNextRead();
+          console.debug('cambiato valore : ', eepromData.hasValueChanged());
+          if (eepromData.hasValueChanged() && eepromData.AddrUnit) {
+            try {
+              const data = convertEEPROMToUint8Array(eepromData);
+              const buffer = convertUint8ArrayToByteArray(data);
+              console.debug(
+                'scrivo su : ',
+                characteristic.characteristic,
+                'data :',
+                buffer,
+              );
+              if (data.length === 240) {
+                await BleManager.writeWithoutResponse(
+                  device,
+                  characteristic.service,
+                  characteristic.characteristic,
+                  buffer,
+                  //20,
+                );
+              }
+              eepromData.updatePreviousState();
+              if (!eepromData.hasValueChanged())
+                console.debug(
+                  'Caratteristica scritta con successo e struttura aggiornata',
+                );
+              else
+                console.debug(
+                  'Caratteristica scritta con successo e struttura NON aggiornata',
+                );
+            } catch (error) {
+              console.error(
+                'Errore nella scrittura della caratteristica:',
+                error,
+              );
+            }
+          } else {
+            try {
+              let data = await BleManager.read(
+                device,
+                characteristic.service,
+                characteristic.characteristic,
+              );
+              parseUint8ArrayToEEPROM(data);
+              this.characteristicValue = data;
+              console.debug('eeprom letta : ', data);
+            } catch (error) {
+              console.error(
+                'Errore nella lettura della caratteristica:',
+                error,
+              );
+              this.scheduleNextRead();
+            }
           }
         } else if (characteristic.characteristic === 'ff02') {
           try {

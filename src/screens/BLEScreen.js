@@ -15,6 +15,7 @@ import VerticalProgressBar from '../icons/VerticalProgressBar.js';*/
 import CountdownProgressBar from '../icons/CountdownProgressBar.js';
 import {eepromData, pollingData, debugData} from '../function/Data.js';
 import InfoText from '../icons/Controls.js';
+import {convertEEPROMToUint8Array} from '../function/Parsing.js';
 
 class BLEScreen extends Component {
   constructor(props) {
@@ -29,6 +30,7 @@ class BLEScreen extends Component {
       speedF: 0,
       isFirstCycle: true,
       airflow: 0,
+      serial: 0,
     };
 
     this.bluetooth = new BLEReader();
@@ -48,17 +50,14 @@ class BLEScreen extends Component {
         Vf: debugData.VoutMotorF,
       });
 
-      if (
-        this.state.isFirstCycle == true &&
-        eepromData.Set_StepMotorsFSC_CAF4 > 0
-      ) {
+      if (this.state.isFirstCycle == true && eepromData.SerialString > 0) {
         this.setState({
-          airflow: eepromData.Set_StepMotorsFSC_CAF4 / 10,
+          serial: eepromData.SerialString,
           isFirstCycle: false,
         });
       }
 
-      console.debug('verifico', this.state.airflow, this.state.isFirstCycle);
+      // console.debug('verifico', this.state.airflow, this.state.isFirstCycle);
     }, 1000);
   }
 
@@ -74,15 +73,18 @@ class BLEScreen extends Component {
     // Esegui le azioni desiderate quando il valore cambia, ad esempio, aggiorna lo stato di BLEScreen
     // bconsole.debug('Nuovo valore barra:', newValue);
     eepromData.Set_StepMotorsFSC_CAF4 = newValue * 1000;
+    eepromData.cntUpdate_SettingPar++;
     this.setState({airflow: eepromData.Set_StepMotorsFSC_CAF4 / 10});
+    const nuovaEE = convertEEPROMToUint8Array(eepromData);
+    console.debug(nuovaEE);
 
     // Puoi fare qualcos'altro qui con il nuovo valore
   };
 
   render() {
-    console.debug('render', this.state.airflow);
+    // console.debug('render', eepromData.SerialString);
 
-    if (this.state.airflow <= 0 && this.state.isFirstCycle == true) {
+    if (this.state.serial <= 0 && this.state.isFirstCycle == true) {
       return (
         <View>
           <Text>{'Loading data...'}</Text>

@@ -27,6 +27,11 @@ const EN_FUNC2 = [
   'PASSWORD',
 ];
 
+export function convertUint8ArrayToByteArray(uint8Array) {
+  const byteArray = Array.from(uint8Array);
+  return byteArray;
+}
+
 function getBitsFromArray(bitString, stringsArray) {
   if (bitString.length !== 8 || stringsArray.length !== 8) {
     throw new Error(
@@ -54,12 +59,34 @@ function convertUint8ToSignedInt(uint8Value) {
   }
 }
 
+function convertSignedIntToUint8(signedInt) {
+  // Se il valore è negativo, aggiungi 256 per convertirlo in un Uint8
+  if (signedInt < 0) {
+    return 256 + signedInt;
+  } else {
+    return signedInt;
+  }
+}
+
+function getReversedUint8Value(HW1, HWget) {
+  let uint8Value = 0;
+
+  for (let i = HW1.length - 1; i >= 0; i--) {
+    if (HWget.includes(HW1[i])) {
+      uint8Value |= 1 << (7 - i);
+    }
+  }
+
+  return uint8Value;
+}
+
 export function parseUint8ArrayToEEPROM(uint8Array) {
   if (uint8Array.length < 240) {
     throw new Error('Data array is not valid');
   }
 
   if (
+    uint8Array[58] + uint8Array[126] + uint8Array[152] + uint8Array[237] > 0 &&
     eepromData.cntUpdate_info == uint8Array[58] &&
     eepromData.cntUpdate_SettingPar == uint8Array[126] &&
     eepromData.cntUpdate_SetTemp == uint8Array[152] &&
@@ -194,7 +221,12 @@ export function parseUint8ArrayToEEPROM(uint8Array) {
     eepromData.Set_MBF_return = uint8Array[124];
     eepromData.SetPoint_Airflow_CO2 = uint8Array[125];
     eepromData.cntUpdate_SettingPar = uint8Array[126];
-    eepromData.Calibr = 6;
+    eepromData.Calibr1 = uint8Array[127];
+    eepromData.Calibr2 = uint8Array[128];
+    eepromData.Calibr3 = uint8Array[129];
+    eepromData.Calibr4 = uint8Array[130];
+    eepromData.Calibr5 = uint8Array[131];
+    eepromData.Calibr6 = uint8Array[132];
     eepromData.Bypass_minTempExt = (uint8Array[134] << 8) | uint8Array[133];
     eepromData.SetPointTemp1 = (uint8Array[136] << 8) | uint8Array[135];
     eepromData.SetPointTemp2 = (uint8Array[138] << 8) | uint8Array[137];
@@ -217,6 +249,202 @@ export function parseUint8ArrayToEEPROM(uint8Array) {
     eepromData.none = uint8Array[238];
     eepromData.version_eeprom = String.fromCharCode(uint8Array[239]);
   }
+}
+
+export function convertEEPROMToUint8Array(eepromData) {
+  const uint8Array = new Uint8Array(240);
+
+  // Inserisci i dati nell'array
+  uint8Array[0] = eepromData.AddrUnit;
+  uint8Array[1] = eepromData.Type_func === 'EXTRA' ? 1 : 0;
+
+  uint8Array[2] = eepromData.HW_Vers.charCodeAt(0);
+  uint8Array[3] = eepromData.HW_Vers.charCodeAt(1);
+  uint8Array[4] = eepromData.HW_Vers.charCodeAt(2);
+  uint8Array[5] = eepromData.HW_Vers.charCodeAt(3);
+
+  uint8Array[6] = eepromData.SW_Vers.charCodeAt(0);
+  uint8Array[7] = eepromData.SW_Vers.charCodeAt(1);
+  uint8Array[8] = eepromData.SW_Vers.charCodeAt(2);
+  uint8Array[9] = eepromData.SW_Vers.charCodeAt(3);
+  uint8Array[10] = eepromData.SW_Vers.charCodeAt(4);
+
+  uint8Array[11] = eepromData.SerialString.charCodeAt(0);
+  uint8Array[12] = eepromData.SerialString.charCodeAt(1);
+  uint8Array[13] = eepromData.SerialString.charCodeAt(2);
+  uint8Array[14] = eepromData.SerialString.charCodeAt(3);
+  uint8Array[15] = eepromData.SerialString.charCodeAt(4);
+  uint8Array[16] = eepromData.SerialString.charCodeAt(5);
+  uint8Array[17] = eepromData.SerialString.charCodeAt(6);
+  uint8Array[18] = eepromData.SerialString.charCodeAt(7);
+  uint8Array[19] = eepromData.SerialString.charCodeAt(8);
+  uint8Array[20] = eepromData.SerialString.charCodeAt(9);
+  uint8Array[21] = eepromData.SerialString.charCodeAt(10);
+  uint8Array[22] = eepromData.SerialString.charCodeAt(11);
+  uint8Array[23] = eepromData.SerialString.charCodeAt(12);
+  uint8Array[24] = eepromData.SerialString.charCodeAt(13);
+  uint8Array[25] = eepromData.SerialString.charCodeAt(14);
+  uint8Array[26] = eepromData.SerialString.charCodeAt(15);
+  uint8Array[27] = eepromData.SerialString.charCodeAt(16);
+  uint8Array[28] = eepromData.SerialString.charCodeAt(17);
+
+  const swVerModBusArray = eepromData.swVer_ModBus.split('.');
+  uint8Array[29] = parseInt(swVerModBusArray[0], 10);
+  uint8Array[30] = parseInt(swVerModBusArray[1], 10);
+
+  uint8Array[31] = eepromData.Sign_Test.charCodeAt(0);
+  uint8Array[32] = eepromData.Sign_Test.charCodeAt(1);
+  uint8Array[33] = eepromData.CodeErrTest;
+
+  uint8Array[34] = eepromData.hour_runnig & 0xff;
+  uint8Array[35] = (eepromData.hour_runnig >> 8) & 0xff;
+  uint8Array[36] = (eepromData.hour_runnig >> 16) & 0xff;
+  uint8Array[37] = (eepromData.hour_runnig >> 24) & 0xff;
+
+  uint8Array[38] = eepromData.time_lastCloggedFilers & 0xff;
+  uint8Array[39] = (eepromData.time_lastCloggedFilers >> 8) & 0xff;
+  uint8Array[40] = (eepromData.time_lastCloggedFilers >> 16) & 0xff;
+  uint8Array[41] = (eepromData.time_lastCloggedFilers >> 24) & 0xff;
+
+  uint8Array[42] = getReversedUint8Value(HW1, eepromData.AccessoyHW1);
+  uint8Array[43] = getReversedUint8Value(HW2, eepromData.AccessoyHW2);
+  uint8Array[44] = getReversedUint8Value(HW3, eepromData.AccessoyHW3);
+  uint8Array[45] = getReversedUint8Value(HW4, eepromData.AccessoyHW4);
+
+  uint8Array[46] = eepromData.Enab_Fuction1;
+  uint8Array[47] = eepromData.Enab_Fuction2;
+  uint8Array[48] = eepromData.msk_Enab_Fuction1;
+  uint8Array[49] = eepromData.msk_Enab_Fuction2;
+  uint8Array[50] = eepromData.Dsc_Sdcard_Update_Delay;
+  uint8Array[51] = eepromData.Pir_Update_Delay;
+
+  uint8Array[52] = 255;
+  uint8Array[53] = 255;
+  uint8Array[54] = 255;
+  uint8Array[55] = 255;
+  uint8Array[56] = 255;
+  uint8Array[57] = 255;
+
+  uint8Array[58] = eepromData.cntUpdate_info;
+  uint8Array[59] = eepromData.numMotors;
+  uint8Array[60] = eepromData.numPulseMotors;
+  uint8Array[61] = eepromData.typeMotors.charCodeAt(0);
+  uint8Array[62] = eepromData.chWireless;
+  uint8Array[63] = eepromData.depotMotors;
+  uint8Array[64] = eepromData.numNTC;
+  uint8Array[65] = eepromData.Posiz_NTC;
+  uint8Array[66] = eepromData.RotazioneBypass === 'Counter-Clockwise' ? 255 : 0;
+
+  uint8Array[67] = 255;
+  uint8Array[68] = 255;
+  uint8Array[69] = 255;
+  uint8Array[70] = 255;
+  uint8Array[71] = 255;
+  uint8Array[72] = 255;
+  uint8Array[73] = 255;
+  uint8Array[74] = 255;
+  uint8Array[75] = 255;
+
+  uint8Array[76] = eepromData.Set_Power_ON;
+  uint8Array[77] = eepromData.Config_Bypass;
+  uint8Array[78] = eepromData.Set_Input1;
+  uint8Array[79] = eepromData.Set_Input2;
+  uint8Array[80] = eepromData.Set_Output1;
+  uint8Array[81] = eepromData.Set_Output2;
+  uint8Array[82] = eepromData.sel_idxStepMotors;
+
+  uint8Array[83] = eepromData.Set_StepMotorsFSC_CAF1 & 0xff;
+  uint8Array[84] = eepromData.Set_StepMotorsFSC_CAF1 >> 8;
+  uint8Array[85] = eepromData.Set_StepMotorsFSC_CAF2 & 0xff;
+  uint8Array[86] = eepromData.Set_StepMotorsFSC_CAF2 >> 8;
+  uint8Array[87] = eepromData.Set_StepMotorsFSC_CAF3 & 0xff;
+  uint8Array[88] = eepromData.Set_StepMotorsFSC_CAF3 >> 8;
+  uint8Array[89] = eepromData.Set_StepMotorsFSC_CAF4 & 0xff;
+  uint8Array[90] = eepromData.Set_StepMotorsFSC_CAF4 >> 8;
+
+  uint8Array[91] = eepromData.Set_StepMotors_CAP1 & 0xff;
+  uint8Array[92] = eepromData.Set_StepMotors_CAP1 >> 8;
+  uint8Array[93] = eepromData.Set_StepMotors_CAP2 & 0xff;
+  uint8Array[94] = eepromData.Set_StepMotors_CAP2 >> 8;
+  uint8Array[95] = eepromData.Set_StepMotors_CAP3 & 0xff;
+  uint8Array[96] = eepromData.Set_StepMotors_CAP3 >> 8;
+  uint8Array[97] = eepromData.Set_StepMotors_CAP4 & 0xff;
+  uint8Array[98] = eepromData.Set_StepMotors_CAP4 >> 8;
+  uint8Array[99] = convertUint8ToSignedInt(eepromData.Set_Imbalance1);
+  uint8Array[100] = convertUint8ToSignedInt(eepromData.Set_Imbalance2);
+
+  uint8Array[101] = eepromData.Set_TimeBoost;
+  // Inverso di eepromData.SetPoint_CO2
+  uint8Array[102] = eepromData.SetPoint_CO2 & 0xff;
+  uint8Array[103] = eepromData.SetPoint_CO2 >> 8;
+
+  // Inverso di eepromData.SetPoint_RH
+  uint8Array[104] = eepromData.SetPoint_RH;
+
+  // Inverso di eepromData.SetPoint_VOC
+  uint8Array[105] = eepromData.SetPoint_VOC & 0xff;
+  uint8Array[106] = eepromData.SetPoint_VOC >> 8;
+
+  // Inverso di eepromData.gg_manut_Filter
+  uint8Array[107] = eepromData.gg_manut_Filter & 0xff;
+  uint8Array[108] = eepromData.gg_manut_Filter >> 8;
+
+  // Inverso di eepromData.servicePassword
+  for (let i = 0; i < 5; i++) {
+    uint8Array[109 + i] = eepromData.servicePassword.charCodeAt(i);
+  }
+
+  // Inverso di eepromData.endUserPassword
+  for (let i = 0; i < 5; i++) {
+    uint8Array[114 + i] = eepromData.endUserPassword.charCodeAt(i);
+  }
+
+  uint8Array[119] = eepromData.calibra_CAP & 0xff;
+  uint8Array[120] = eepromData.calibra_CAP >> 8;
+  uint8Array[121] = eepromData.manual_Reset;
+  uint8Array[122] = eepromData.DPP_CalibrationValue;
+  uint8Array[123] = eepromData.Set_MBF_fresh;
+  uint8Array[124] = eepromData.Set_MBF_return;
+  uint8Array[125] = eepromData.SetPoint_Airflow_CO2;
+  uint8Array[126] = eepromData.cntUpdate_SettingPar;
+
+  uint8Array[127] = eepromData.Calibr1;
+  uint8Array[128] = eepromData.Calibr2;
+  uint8Array[129] = eepromData.Calibr3;
+  uint8Array[130] = eepromData.Calibr4;
+  uint8Array[131] = eepromData.Calibr5;
+  uint8Array[132] = eepromData.Calibr6;
+
+  uint8Array[133] = eepromData.Bypass_minTempExt & 0xff;
+  uint8Array[134] = eepromData.Bypass_minTempExt >> 8;
+  uint8Array[135] = eepromData.SetPointTemp1 & 0xff;
+  uint8Array[136] = eepromData.SetPointTemp1 >> 8;
+  uint8Array[137] = eepromData.SetPointTemp2 & 0xff;
+  uint8Array[138] = eepromData.SetPointTemp2 >> 8;
+  uint8Array[139] = eepromData.idxSetPointT;
+  uint8Array[140] = convertSignedIntToUint8(eepromData.hister_AWP_Temp_Hot1);
+  uint8Array[141] = convertSignedIntToUint8(eepromData.hister_AWP_Temp_Hot2);
+  uint8Array[142] = convertSignedIntToUint8(eepromData.hister_AWP_Temp_Cold1);
+  uint8Array[143] = convertSignedIntToUint8(eepromData.hister_AWP_Temp_Cold2);
+  uint8Array[144] = convertSignedIntToUint8(eepromData.hister_Temp_Hot1);
+  uint8Array[145] = convertSignedIntToUint8(eepromData.hister_Temp_Hot2);
+  uint8Array[146] = convertSignedIntToUint8(eepromData.hister_Temp_Cold1);
+  uint8Array[147] = convertSignedIntToUint8(eepromData.hister_Temp_Cold2);
+  uint8Array[148] = eepromData.RefTSetting;
+  uint8Array[149] = eepromData.DeltaTemp_Supply;
+  uint8Array[150] = eepromData.Set_EHD_mod;
+  uint8Array[151] = eepromData.Set_BPD_mod;
+  uint8Array[152] = eepromData.cntUpdate_SetTemp;
+
+  for (let i = 0; i < 84; i++) {
+    uint8Array[153 + i] = 0;
+  }
+
+  uint8Array[237] = eepromData.cntUpdate_dayProg;
+  uint8Array[238] = eepromData.none;
+  uint8Array[239] = eepromData.version_eeprom.charCodeAt(0);
+
+  return uint8Array;
 }
 
 export function parseUint8ArrayToDebug(uint8Array) {
