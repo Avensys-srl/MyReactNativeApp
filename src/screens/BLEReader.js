@@ -65,12 +65,12 @@ class BLEReader extends Component {
                 buffer,
               );
               if (data.length === 240) {
-                await BleManager.writeWithoutResponse(
+                await BleManager.write(
                   device,
                   characteristic.service,
                   characteristic.characteristic,
                   buffer,
-                  //20,
+                  240,
                 );
               }
               eepromData.updatePreviousState();

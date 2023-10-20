@@ -16,6 +16,11 @@ import CountdownProgressBar from '../icons/CountdownProgressBar.js';
 import {eepromData, pollingData, debugData} from '../function/Data.js';
 import InfoText from '../icons/Controls.js';
 import {convertEEPROMToUint8Array} from '../function/Parsing.js';
+import CustomNavigation from './CustomNavigation.js';
+import HI from '../assets/house-icon-original.png';
+import PI from '../assets/sliders-icon-original.png';
+import II from '../assets/info-icon-original.png';
+import SI from '../assets/wrench-icon-original.png';
 
 class BLEScreen extends Component {
   constructor(props) {
@@ -48,6 +53,7 @@ class BLEScreen extends Component {
         speedR: debugData.SpeedMotorR1,
         Vr: debugData.VoutMotorR,
         Vf: debugData.VoutMotorF,
+        airflow: eepromData.Set_StepMotorsFSC_CAF4 / 10,
       });
 
       if (this.state.isFirstCycle == true && eepromData.SerialString > 0) {
@@ -129,6 +135,12 @@ class BLEScreen extends Component {
           descr={'Speed Fan Return/Exhaust'}
           value={Array(this.state.speedR + ' RPM', this.state.Vr / 100 + ' V')}
         />
+        <View
+          style={{
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'flex-end',
+          }}></View>
       </SafeAreaView>
     );
   }

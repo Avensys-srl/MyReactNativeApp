@@ -1,6 +1,14 @@
 import React, {useState} from 'react';
-import {View, TouchableOpacity, StyleSheet, Text} from 'react-native';
+import {
+  View,
+  TouchableOpacity,
+  StyleSheet,
+  Text,
+  Dimensions,
+} from 'react-native';
 
+const {width} = Dimensions.get('window');
+const {height} = Dimensions.get('window');
 const OnOff = ({status}) => {
   const [isToggled, setIsToggled] = useState(false);
 
@@ -28,9 +36,6 @@ const OnOff = ({status}) => {
   );
 };
 
-const circleSize = 20;
-const containerWidth = circleSize * 4;
-
 const styles = StyleSheet.create({
   mainContainer: {
     flexDirection: 'row',
@@ -44,31 +49,31 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   container: {
-    height: circleSize,
-    width: containerWidth,
+    height: height * 0.03,
+    width: width * 0.3,
     backgroundColor: 'white',
-    borderRadius: circleSize / 2,
+    borderRadius: (width * 0.8) / 2,
     justifyContent: 'center',
     overflow: 'hidden',
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: 'black',
   },
   circle: {
-    height: circleSize,
-    width: circleSize,
-    borderRadius: circleSize / 2,
+    height: height * 0.03,
+    width: width * 0.06,
+    borderRadius: 12,
     backgroundColor: 'lightgray',
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: 'black',
     position: 'absolute',
-    left: 0,
+    left: -1,
   },
   circleActive: {
-    left: containerWidth - circleSize,
+    left: width * 0.048 * 5,
     backgroundColor: '#4CAF50',
   },
   text: {
-    fontSize: 18,
+    fontSize: 16,
     marginLeft: 8,
     marginTop: -20,
   },

@@ -5,8 +5,9 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import InfoScreen from './src/screens/InfoScreen.js';
 import BLEScreen from './src/screens/BLEScreen.js';
-import Service21 from './src/screens/Service21.js';
+import Service22 from './src/screens/Service22.js';
 import {useNavigation} from '@react-navigation/native';
+import Navigation from './src/screens/Navigation.js';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -36,8 +37,8 @@ const MainTabs = () => {
       />
       <Tab.Screen
         name="Profile"
-        component={Service21}
-        options={{tabBarLabel: 'Service21', headerShown: false}}
+        component={Service22}
+        options={{tabBarLabel: 'Service22', headerShown: false}}
       />
     </Tab.Navigator>
   );
@@ -70,3 +71,23 @@ function App() {
 export default App;
 
 // <Stack.Screen name="BLEScreen" component={BLEScreen} />
+
+/*    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen
+          name="MainTabs"
+          component={MainTabs}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="BLEScreen"
+          component={BLEScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="InfoScreen"
+          component={InfoScreen}
+          options={{headerShown: false}}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>*/

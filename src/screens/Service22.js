@@ -13,7 +13,7 @@ import OnOff from '../icons/OnOff';
 
 const {width} = Dimensions.get('window');
 const {height} = Dimensions.get('window');
-const Service21 = () => {
+const Service22 = () => {
   return (
     <View>
       <TouchableOpacity style={styles.bgheading}>
@@ -53,7 +53,7 @@ const Service21 = () => {
   );
 };
 
-export default Service21;
+export default Service22;
 
 const styles = StyleSheet.create({
   bgheading: {
