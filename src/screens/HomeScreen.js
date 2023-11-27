@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import {
+  ScrollView,
   View,
   StyleSheet,
   Text,
@@ -15,12 +16,10 @@ import SI from '../assets/wrench-icon-original.png';
 
 const HomeScreen = () => {
   return (
-    <View style={styles.container}>
-      <Text style={{textAlign: 'center', fontSize: 25}}>Home Screen</Text>
-      <View style={{flex: 1, alignItems: 'center', justifyContent: 'flex-end'}}>
-        <CustomNavigation HI={HI} PI={PI} II={II} SI={SI} OC={0} />
-      </View>
-    </View>
+    <ScrollView style={styles.container}>
+      
+      <CustomNavigation HI={HI} PI={PI} II={II} SI={SI} OC={0} />
+    </ScrollView>
   );
 };
 

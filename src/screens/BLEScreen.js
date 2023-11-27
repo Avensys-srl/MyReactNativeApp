@@ -36,6 +36,7 @@ class BLEScreen extends Component {
       isFirstCycle: true,
       airflow: 0,
       serial: 0,
+      FKI: 0,
     };
 
     this.bluetooth = new BLEReader();
@@ -54,6 +55,7 @@ class BLEScreen extends Component {
         Vr: debugData.VoutMotorR,
         Vf: debugData.VoutMotorF,
         airflow: eepromData.Set_StepMotorsFSC_CAF4 / 10,
+        FKI: debugData.StatusDSC,
       });
 
       if (this.state.isFirstCycle == true && eepromData.SerialString > 0) {
@@ -135,6 +137,7 @@ class BLEScreen extends Component {
           descr={'Speed Fan Return/Exhaust'}
           value={Array(this.state.speedR + ' RPM', this.state.Vr / 100 + ' V')}
         />
+        <InfoText descr={'FKI - BELIMO'} value={this.state.FKI} />
         <View
           style={{
             flex: 1,
@@ -146,20 +149,3 @@ class BLEScreen extends Component {
   }
 }
 export default BLEScreen;
-
-/*
-  <CircleProgressBar
-        TSB={'Inbalance'}
-        TSR={70}
-        TSL={-70}
-        RIV={2}
-        BG={0}></CircleProgressBar>
-      <Text style={styles.sectionDescription}>
-        {'Please choose your speed'}
-      </Text>
-      <TrippleBtn TBC={'2'} TBR={'3'} TBL={'1'}></TrippleBtn>
-      <ToggleSwitch TOO={'Speed Mode'} CL={'Stepless'} CR={'3 Speed'} BG={0} />
-      <NewRangeSlider TPR={'choose'} VL1={30} VL2={100}></NewRangeSlider>
-      <ChangeStatusBtn CST={'click on me'} BG={0}></ChangeStatusBtn>
-      <VerticalProgressBar FSI={''} VS={30} TS={'Speed'} BG={1} />
-*/

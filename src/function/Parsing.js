@@ -482,7 +482,7 @@ export function parseUint8ArrayToDebug(uint8Array) {
   debugData.MeasTempWaterPerheater = (uint8Array[42] << 8) | uint8Array[41];
   debugData.MeasTempAirPerheater = (uint8Array[44] << 8) | uint8Array[43];
   debugData.MeasTempAirCooler = (uint8Array[46] << 8) | uint8Array[45];
-  debugData.StatusDSC = uint8Array[47];
+  debugData.StatusDSC = String.fromCharCode(uint8Array[47]);
 }
 
 export function parseUint8ArrayToPolling(uint8Array) {
