@@ -24,7 +24,7 @@ class InfoScreen extends Component {
       const pollinglistcopy = [];
 
       for (const key in eepromData) {
-        if (eepromData.hasOwnProperty(key)) {
+        if (eepromData.hasOwnProperty(key) && key !== 'previousState') {
           eepromlistcopy.push(
             <InfoText descr={key} value={eepromData[key]}></InfoText>,
           );
@@ -62,21 +62,63 @@ class InfoScreen extends Component {
   };
 
   render() {
+    const QRstring =
+      eepromData.SerialString +
+      '|' +
+      eepromData.AccessoyHW1 +
+      '|' +
+      eepromData.AccessoyHW2 +
+      '|' +
+      eepromData.AccessoyHW3 +
+      '|' +
+      eepromData.AccessoyHW4 +
+      '|' +
+      eepromData.HW_Vers +
+      '|' +
+      eepromData.SW_Vers +
+      '|' +
+      eepromData.hour_runnig;
+
+    const isDataLoaded =
+      this.state.pollinglist.length > 0 &&
+      this.state.debuglist.length > 0 &&
+      this.state.eepromlist.length > 0;
+
     return (
       <SafeAreaView style={styles.body}>
         <ScrollView>
-          <Text style={styles.sectionDescription}>{'POLLING DATA'}</Text>
-          <View>{this.state.pollinglist}</View>
-          <Text style={styles.sectionDescription}>{'DEBUG DATA'}</Text>
-          <View>{this.state.debuglist}</View>
-          <Text style={styles.sectionDescription}>{'EEPROM DATA'}</Text>
-          <View>{this.state.eepromlist}</View>
-          <View>
-            <QRCodeGeneratorWithSharing inputString={eepromData.SerialString} />
-          </View>
           <Pressable style={styles.scanButton} onPress={this.navigateToScreen}>
-            <Text style={styles.scanButtonText}>{'Back'}</Text>
+            <Text style={styles.scanButtonText}>{'Back to home'}</Text>
           </Pressable>
+          <View>
+            <QRCodeGeneratorWithSharing inputString={QRstring} />
+          </View>
+          {!isDataLoaded && (
+            <View>
+              <Text style={styles.sectionDescription}>
+                {'Data Loading please wait...'}
+              </Text>
+            </View>
+          )}
+          {this.state.pollinglist.length > 0 && (
+            <View>
+              <Text style={styles.sectionDescription}>{'POLLING DATA'}</Text>
+              <View>{this.state.pollinglist}</View>
+            </View>
+          )}
+          {this.state.debuglist.length > 0 && (
+            <View>
+              <Text style={styles.sectionDescription}>{'DEBUG DATA'}</Text>
+              <View>{this.state.debuglist}</View>
+            </View>
+          )}
+
+          {this.state.eepromlist.length > 0 && (
+            <View>
+              <Text style={styles.sectionDescription}>{'EEPROM DATA'}</Text>
+              <View>{this.state.eepromlist}</View>
+            </View>
+          )}
         </ScrollView>
       </SafeAreaView>
     );

@@ -28,10 +28,34 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     ...boxShadow,
   },
+  BPButton: {
+    alignItems: 'center',
+    justifyContent: 'left',
+    paddingVertical: 16,
+    backgroundColor: '#0a398a',
+    margin: 10,
+    borderRadius: 12,
+    flex: 1,
+    ...boxShadow,
+  },
   scanButtonText: {
     fontSize: 20,
     letterSpacing: 0.25,
     color: Colors.white,
+  },
+  BPButtonText: {
+    fontSize: 16,
+    letterSpacing: 0.25,
+    color: Colors.white,
+  },
+  TitleText: {
+    fontSize: 16,
+    letterSpacing: 0.25,
+    justifyContent: 'center',
+  },
+  buttonContainer: {
+    flexDirection: 'row', // Imposta il layout in una riga
+    justifyContent: 'center',
   },
   body: {
     backgroundColor: Colors.white,

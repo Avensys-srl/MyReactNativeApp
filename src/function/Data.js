@@ -72,6 +72,8 @@ class EEPROM_DATA_TAG {
     this.Set_MBF_fresh = 0;
     this.Set_MBF_return = 0;
     this.SetPoint_Airflow_CO2 = 0;
+    this.Time_Fire_Test = 0;
+    this.Fire_Config = 0;
     this.cntUpdate_SettingPar = 0;
     this.Calibr1 = 0;
     this.Calibr2 = 0;

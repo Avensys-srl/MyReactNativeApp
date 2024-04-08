@@ -49,11 +49,6 @@ function App() {
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen
-          name="MainTabs"
-          component={MainTabs}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen
           name="BLEScreen"
           component={BLEScreen}
           options={{headerShown: false}}

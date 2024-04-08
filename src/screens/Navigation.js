@@ -19,40 +19,6 @@ function Navigation() {
           component={BLEScreen}
           options={{headerShown: false}}
         />
-        <Stack.Screen
-          name="ServiceTwoOne"
-          component={ServiceTwoOne}
-          options={{
-            headerTitle: 'Preheat Settings',
-            headerStyle: {
-              backgroundColor: '#92d050',
-            },
-            headerTitleStyle: {
-              color: 'white',
-              fontSize: 20,
-            },
-            headerTintColor: 'white',
-            headerRight: () => <CustomHeaderBackButton />,
-            headerLeft: () => <BackButton />,
-          }}
-        />
-        <Stack.Screen
-          name="Service22"
-          component={Service22}
-          options={{
-            headerTitle: 'Preheat Settings',
-            headerStyle: {
-              backgroundColor: '#92d050',
-            },
-            headerTitleStyle: {
-              color: 'white',
-              fontSize: 20,
-            },
-            headerTintColor: 'white',
-            headerRight: () => <CustomHeaderBackButton />,
-            headerLeft: () => <BackButton />,
-          }}
-        />
       </Stack.Navigator>
     </NavigationContainer>
   );
