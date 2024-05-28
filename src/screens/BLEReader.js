@@ -26,7 +26,7 @@ class BLEReader extends Component {
 
   async connectToDevice() {
     BleManager.start();
-    const deviceIdentifier = 'CC:DB:A7:FD:E4:3E'; // Sostituisci con l'ID del tuo dispositivo
+    const deviceIdentifier = 'FC:B4:67:68:54:7E'; // Sostituisci con l'ID del tuo dispositivo
     //const deviceIdentifier = 'CC:DB:A7:FD:E4:86'; // Sostituisci con l'ID del tuo dispositivo
 
     try {
@@ -48,7 +48,7 @@ class BLEReader extends Component {
     // Leggi la caratteristica desiderata
 
     //const device = 'CC:DB:A7:FD:E4:86';
-    const device = 'CC:DB:A7:FD:E4:3E';
+    const device = 'FC:B4:67:68:54:7E';
 
     const peripheralData = await BleManager.retrieveServices(device);
 
