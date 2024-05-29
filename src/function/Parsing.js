@@ -353,7 +353,7 @@ export function convertEEPROMToUint8Array(eepromData) {
   uint8Array[79] = eepromData.Set_Input2;
   uint8Array[80] = eepromData.Set_Output1;
   uint8Array[81] = eepromData.Set_Output2;
-  uint8Array[82] = 3; //eepromData.sel_idxStepMotors;
+  uint8Array[82] = eepromData.sel_idxStepMotors;
 
   uint8Array[83] = eepromData.Set_StepMotorsFSC_CAF1 & 0xff;
   uint8Array[84] = eepromData.Set_StepMotorsFSC_CAF1 >> 8;

@@ -45,99 +45,86 @@ class BLEReader extends Component {
   }
 
   async startReadingCharacteristics() {
-    // Leggi la caratteristica desiderata
-
-    //const device = 'CC:DB:A7:FD:E4:86';
     const device = 'FC:B4:67:68:54:7E';
-
-    const peripheralData = await BleManager.retrieveServices(device);
-
-    if (peripheralData.characteristics) {
-      for (let characteristic of peripheralData.characteristics) {
-        if (characteristic.characteristic === 'ff01') {
-          console.debug('cambiato valore : ', eepromData.hasValueChanged());
-          if (eepromData.hasValueChanged() && eepromData.AddrUnit) {
+  
+    try {
+      const peripheralData = await BleManager.retrieveServices(device);
+  
+      if (peripheralData.characteristics) {
+        // Initial alignment on first connection
+        for (let characteristic of peripheralData.characteristics) {
+          if (characteristic.characteristic === 'ff01') {
             try {
-              const data = convertEEPROMToUint8Array(eepromData);
-              const buffer = convertUint8ArrayToByteArray(data);
-              console.debug(
-                'scrivo su : ',
-                characteristic.characteristic,
-                'data :',
-                buffer,
-              );
-              if (data.length === 242) {
-                await BleManager.write(
-                  device,
-                  characteristic.service,
-                  characteristic.characteristic,
-                  buffer,
-                  242,
-                );
-              }
-              eepromData.updatePreviousState();
-              if (!eepromData.hasValueChanged())
-                console.debug(
-                  'Caratteristica scritta con successo e struttura aggiornata',
-                );
-              else
-                console.debug(
-                  'Caratteristica scritta con successo e struttura NON aggiornata',
-                );
-            } catch (error) {
-              console.error(
-                'Errore nella scrittura della caratteristica:',
-                error,
-              );
-            }
-          } else {
-            try {
-              let data = await BleManager.read(
-                device,
-                characteristic.service,
-                characteristic.characteristic,
-              );
+              let data = await BleManager.read(device, characteristic.service, characteristic.characteristic);
               parseUint8ArrayToEEPROM(data);
-              this.characteristicValue = data;
-              console.debug('eeprom letta : ', data);
+              eepromData.updatePreviousState(); // Assuming this updates the EEPROM data structure
+              console.debug('EEPROM read and aligned: ', data);
             } catch (error) {
-              console.error(
-                'Errore nella lettura della caratteristica:',
-                error,
-              );
-              this.scheduleNextRead();
+              console.error('Error in initial read of characteristic:', error);
+              return; // Exit if initial read fails
             }
-          }
-        } else if (characteristic.characteristic === 'ff02') {
-          try {
-            let data = await BleManager.read(
-              device,
-              characteristic.service,
-              characteristic.characteristic,
-            );
-            parseUint8ArrayToDebug(data);
-          } catch (error) {
-            console.error('Errore nella lettura della caratteristica:', error);
-            this.scheduleNextRead();
-          }
-        } else if (characteristic.characteristic === 'ff03') {
-          try {
-            let data = await BleManager.read(
-              device,
-              characteristic.service,
-              characteristic.characteristic,
-            );
-            parseUint8ArrayToPolling(data);
-            this.scheduleNextRead();
-          } catch (error) {
-            console.error('Errore nella lettura della caratteristica:', error);
-            this.scheduleNextRead();
+            break; // Exit loop after aligning the ff01 characteristic
           }
         }
+  
+        // Main operation cycle
+        while (true) {
+          for (let characteristic of peripheralData.characteristics) {
+            if (characteristic.characteristic === 'ff01') {
+              console.debug('Value changed: ', eepromData.hasValueChanged());
+              if (eepromData.hasValueChanged() && eepromData.AddrUnit) {
+                try {
+                  const data = convertEEPROMToUint8Array(eepromData);
+                  const buffer = convertUint8ArrayToByteArray(data);
+                  console.debug('Writing to characteristic: ', characteristic.characteristic, 'data: ', buffer);
+                  if (data.length === 242) {
+                    await BleManager.write(device, characteristic.service, characteristic.characteristic, buffer, 242);
+                  }
+                  eepromData.updatePreviousState();
+                  eepromData.ValueChange = 0; // Set ValueChange to 0 after writing
+                  console.debug('Characteristic written successfully and structure updated');
+  
+                  // Wait for 20 seconds before the next read
+                  await new Promise(resolve => setTimeout(resolve, 20000));
+                } catch (error) {
+                  console.error('Error writing characteristic:', error);
+                }
+              } else {
+                try {
+                  let data = await BleManager.read(device, characteristic.service, characteristic.characteristic);
+                  parseUint8ArrayToEEPROM(data);
+                  this.characteristicValue = data;
+                  console.debug('EEPROM read: ', data);
+                } catch (error) {
+                  console.error('Error reading characteristic:', error);
+                }
+              }
+            } else if (characteristic.characteristic === 'ff02') {
+              try {
+                let data = await BleManager.read(device, characteristic.service, characteristic.characteristic);
+                parseUint8ArrayToDebug(data);
+              } catch (error) {
+                console.error('Error reading characteristic:', error);
+              }
+            } else if (characteristic.characteristic === 'ff03') {
+              try {
+                let data = await BleManager.read(device, characteristic.service, characteristic.characteristic);
+                parseUint8ArrayToPolling(data);
+              } catch (error) {
+                console.error('Error reading characteristic:', error);
+              }
+            }
+          }
+          // Wait for 10 seconds before starting the next cycle
+          //await new Promise(resolve => setTimeout(resolve, 10000));
+        }
       }
+    } catch (error) {
+      console.error('Error connecting to device:', error);
     }
   }
-
+  
+  
   scheduleNextRead() {
     // Aggiungi la prossima lettura alla coda dopo 3 secondi
     this.readQueue.push(

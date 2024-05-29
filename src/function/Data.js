@@ -104,6 +104,7 @@ class EEPROM_DATA_TAG {
     this.version_eeprom = 0;
 
     this.previousState = this.serialize();
+    this.ValueChange = 0;
   }
 
   serialize() {
@@ -113,12 +114,19 @@ class EEPROM_DATA_TAG {
   }
 
   hasValueChanged() {
-    // Serializza l'oggetto corrente, escludendo la proprietà 'previousState'
-    const {previousState, ...currentState} = this;
-    const currentSerialized = JSON.stringify(currentState);
+    // // Serializza l'oggetto corrente, escludendo la proprietà 'previousState'
+    // const {previousState, ...currentState} = this;
+    // const currentSerialized = JSON.stringify(currentState);
 
-    // Confronta lo stato corrente con lo stato precedente
-    return currentSerialized !== this.previousState;
+    // // Confronta lo stato corrente con lo stato precedente
+        // return currentSerialized !== this.previousState;
+    if(this.ValueChange === 1)
+      {
+        return true;
+      }
+      else 
+        return false;
+
   }
 
   updatePreviousState() {
