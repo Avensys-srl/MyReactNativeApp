@@ -72,7 +72,7 @@ class BLEScreen extends Component {
   handleProgressBarChange = newValue => {
     eepromData.Set_StepMotorsFSC_CAF4 = Number(newValue) * 1000;
     eepromData.sel_idxStepMotors = 3;
-    console.debug('SPEED INDEX',eepromData.sel_idxStepMotors);
+    console.debug('SPEED INDEX', eepromData.sel_idxStepMotors);
     this.setState({ airflow: eepromData.Set_StepMotorsFSC_CAF4 / 10 });
     const newEEPROM = convertEEPROMToUint8Array(eepromData);
     eepromData.ValueChange = 1;
@@ -88,7 +88,7 @@ class BLEScreen extends Component {
 
   updateSpeed = value => {
     eepromData.sel_idxStepMotors = Number(value);
-    console.debug('SPEED INDEX',value);
+    console.debug('SPEED INDEX', value);
     const newEEPROM = convertEEPROMToUint8Array(eepromData);
     eepromData.ValueChange = 1;
     console.debug(newEEPROM);
@@ -113,14 +113,14 @@ class BLEScreen extends Component {
             label="Airflow"
             max_val={100}
             min_val={0}
-            init_val={Number(this.state.airflow / 100}
+            init_val={Number(this.state.airflow / 100)}
             onValueChange={this.handleProgressBarChange}
           />
         </ScrollView>
         <View style={styles.buttonContainer}>
           <Text style={styles.TitleText}>3 Step Speed</Text>
-          </View>
-          <View style={styles.buttonContainer}>
+        </View>
+        <View style={styles.buttonContainer}>
           <Pressable style={styles.BPButton} onPress={() => this.updateSpeed(0)}>
             <Text style={styles.BPButtonText}>1</Text>
           </Pressable>
@@ -133,8 +133,8 @@ class BLEScreen extends Component {
         </View>
         <View style={styles.buttonContainer}>
           <Text style={styles.TitleText}>Bypass Control</Text>
-          </View>
-          <View style={styles.buttonContainer}>
+        </View>
+        <View style={styles.buttonContainer}>
           <Pressable style={styles.BPButton} onPress={() => this.updateConfig(4)}>
             <Text style={styles.BPButtonText}>Open</Text>
           </Pressable>

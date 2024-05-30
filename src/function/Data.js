@@ -31,6 +31,7 @@ class EEPROM_DATA_TAG {
     this.msk_Enab_Fuction2 = 0;
     this.Dsc_Sdcard_Update_Delay = 0;
     this.Pir_Update_Delay = 0;
+    this.Time_Fire_Test_Counter = 0;
     this.size1_free = 0;
     this.cntUpdate_info = 0;
     this.numMotors = 0;

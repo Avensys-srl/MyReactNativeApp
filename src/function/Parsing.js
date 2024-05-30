@@ -166,7 +166,8 @@ export function parseUint8ArrayToEEPROM(uint8Array) {
     eepromData.msk_Enab_Fuction2 = uint8Array[49];
     eepromData.Dsc_Sdcard_Update_Delay = uint8Array[50];
     eepromData.Pir_Update_Delay = uint8Array[51];
-    eepromData.size1_free = 6;
+    eepromData.Time_Fire_Test_Counter = (uint8Array[55] << 24) |(uint8Array[54] << 16) |(uint8Array[53] << 8) | uint8Array[52];
+    eepromData.size1_free = 2;
     eepromData.cntUpdate_info = uint8Array[58];
     eepromData.numMotors = uint8Array[59];
     eepromData.numPulseMotors = uint8Array[60];
@@ -320,10 +321,10 @@ export function convertEEPROMToUint8Array(eepromData) {
   uint8Array[50] = eepromData.Dsc_Sdcard_Update_Delay;
   uint8Array[51] = eepromData.Pir_Update_Delay;
 
-  uint8Array[52] = 255;
-  uint8Array[53] = 255;
-  uint8Array[54] = 255;
-  uint8Array[55] = 255;
+  uint8Array[52] = eepromData.Time_Fire_Test_Counter & 0xff;
+  uint8Array[53] = (eepromData.Time_Fire_Test_Counter >> 8) & 0xff;
+  uint8Array[54] = (eepromData.Time_Fire_Test_Counter >> 16) & 0xff;
+  uint8Array[55] = (eepromData.Time_Fire_Test_Counter >> 24) & 0xff;
   uint8Array[56] = 255;
   uint8Array[57] = 255;
 

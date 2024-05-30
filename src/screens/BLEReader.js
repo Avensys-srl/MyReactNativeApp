@@ -1,6 +1,7 @@
-import React, {Component} from 'react';
-import {View, Text, Button} from 'react-native';
+import React, { Component } from 'react';
+import { View, Text, Button } from 'react-native';
 import BleManager from 'react-native-ble-manager';
+import { NativeEventEmitter, NativeModules } from 'react-native';
 import {
   parseUint8ArrayToEEPROM,
   parseUint8ArrayToDebug,
@@ -8,7 +9,10 @@ import {
   convertEEPROMToUint8Array,
   convertUint8ArrayToByteArray,
 } from '../function/Parsing.js';
-import {eepromData} from '../function/Data.js';
+import { eepromData } from '../function/Data.js';
+
+const BleManagerModule = NativeModules.BleManager;
+const bleManagerEmitter = new NativeEventEmitter(BleManagerModule);
 
 class BLEReader extends Component {
   constructor(props) {
@@ -18,23 +22,70 @@ class BLEReader extends Component {
     this.characteristicValue = null;
     this.readInterval = null;
     this.readQueue = [];
+    this.peripherals = new Map();
   }
 
   componentDidMount() {
-    this.connectToDevice();
+    BleManager.start({ showAlert: false });
+
+    this.handlerDiscover = bleManagerEmitter.addListener('BleManagerDiscoverPeripheral', this.handleDiscoverPeripheral);
+    this.handlerStop = bleManagerEmitter.addListener('BleManagerStopScan', this.handleStopScan);
+    this.handlerDisconnect = bleManagerEmitter.addListener('BleManagerDisconnectPeripheral', this.handleDisconnectedPeripheral);
+    this.handlerUpdate = bleManagerEmitter.addListener('BleManagerDidUpdateValueForCharacteristic', this.handleUpdateValueForCharacteristic);
+
+    this.startScan();
   }
 
-  async connectToDevice() {
-    BleManager.start();
-    const deviceIdentifier = 'FC:B4:67:68:54:7E'; // Sostituisci con l'ID del tuo dispositivo
-    //const deviceIdentifier = 'CC:DB:A7:FD:E4:86'; // Sostituisci con l'ID del tuo dispositivo
+  componentWillUnmount() {
+    this.handlerDiscover.remove();
+    this.handlerStop.remove();
+    this.handlerDisconnect.remove();
+    this.handlerUpdate.remove();
+  }
 
+  startScan() {
+    BleManager.scan([], 5, true).then(() => {
+      console.log('Scanning...');
+    }).catch(err => {
+      console.error('Error starting scan', err);
+    });
+  }
+
+  handleDiscoverPeripheral = (peripheral) => {
+    const { id, name } = peripheral;
+    if (!name) return;
+
+    this.peripherals.set(id, peripheral);
+    if (name.includes('AVENSYS')) {
+      this.connectToDevice(id);
+    }
+  };
+
+  handleStopScan = () => {
+    console.log('Scan is stopped');
+    if (this.peripherals.size === 0) {
+      console.log('No peripherals found');
+    }
+  };
+
+  handleDisconnectedPeripheral = (data) => {
+    let peripheral = this.peripherals.get(data.peripheral);
+    if (peripheral) {
+      peripheral.connected = false;
+      this.peripherals.set(peripheral.id, peripheral);
+    }
+    console.log('Disconnected from ' + data.peripheral);
+  };
+
+  handleUpdateValueForCharacteristic = (data) => {
+    console.log('Received data from ' + data.peripheral + ' characteristic ' + data.characteristic, data.value);
+  };
+
+  async connectToDevice(deviceIdentifier) {
     try {
-      const device = await BleManager.connect(deviceIdentifier, {
-        autoConnect: true,
-      });
+      await BleManager.connect(deviceIdentifier);
 
-      this.connectedDevice = device;
+      this.connectedDevice = deviceIdentifier;
       console.debug('Dispositivo connesso', deviceIdentifier);
 
       // Inizia la lettura delle caratteristiche
@@ -45,28 +96,26 @@ class BLEReader extends Component {
   }
 
   async startReadingCharacteristics() {
-    const device = 'FC:B4:67:68:54:7E';
-  
     try {
-      const peripheralData = await BleManager.retrieveServices(device);
-  
+      const peripheralData = await BleManager.retrieveServices(this.connectedDevice);
+
       if (peripheralData.characteristics) {
         // Initial alignment on first connection
         for (let characteristic of peripheralData.characteristics) {
           if (characteristic.characteristic === 'ff01') {
             try {
-              let data = await BleManager.read(device, characteristic.service, characteristic.characteristic);
+              let data = await BleManager.read(this.connectedDevice, characteristic.service, characteristic.characteristic);
               parseUint8ArrayToEEPROM(data);
-              eepromData.updatePreviousState(); // Assuming this updates the EEPROM data structure
+              eepromData.updatePreviousState();
               console.debug('EEPROM read and aligned: ', data);
             } catch (error) {
               console.error('Error in initial read of characteristic:', error);
-              return; // Exit if initial read fails
+              return;
             }
-            break; // Exit loop after aligning the ff01 characteristic
+            break;
           }
         }
-  
+
         // Main operation cycle
         while (true) {
           for (let characteristic of peripheralData.characteristics) {
@@ -78,20 +127,20 @@ class BLEReader extends Component {
                   const buffer = convertUint8ArrayToByteArray(data);
                   console.debug('Writing to characteristic: ', characteristic.characteristic, 'data: ', buffer);
                   if (data.length === 242) {
-                    await BleManager.write(device, characteristic.service, characteristic.characteristic, buffer, 242);
+                    await BleManager.write(this.connectedDevice, characteristic.service, characteristic.characteristic, buffer, 242);
                   }
                   eepromData.updatePreviousState();
-                  eepromData.ValueChange = 0; // Set ValueChange to 0 after writing
+                  eepromData.ValueChange = 0;
+
                   console.debug('Characteristic written successfully and structure updated');
-  
-                  // Wait for 20 seconds before the next read
-                  await new Promise(resolve => setTimeout(resolve, 20000));
+
+                  await new Promise(resolve => setTimeout(resolve, 10000));
                 } catch (error) {
                   console.error('Error writing characteristic:', error);
                 }
               } else {
                 try {
-                  let data = await BleManager.read(device, characteristic.service, characteristic.characteristic);
+                  let data = await BleManager.read(this.connectedDevice, characteristic.service, characteristic.characteristic);
                   parseUint8ArrayToEEPROM(data);
                   this.characteristicValue = data;
                   console.debug('EEPROM read: ', data);
@@ -101,32 +150,28 @@ class BLEReader extends Component {
               }
             } else if (characteristic.characteristic === 'ff02') {
               try {
-                let data = await BleManager.read(device, characteristic.service, characteristic.characteristic);
+                let data = await BleManager.read(this.connectedDevice, characteristic.service, characteristic.characteristic);
                 parseUint8ArrayToDebug(data);
               } catch (error) {
                 console.error('Error reading characteristic:', error);
               }
             } else if (characteristic.characteristic === 'ff03') {
               try {
-                let data = await BleManager.read(device, characteristic.service, characteristic.characteristic);
+                let data = await BleManager.read(this.connectedDevice, characteristic.service, characteristic.characteristic);
                 parseUint8ArrayToPolling(data);
               } catch (error) {
                 console.error('Error reading characteristic:', error);
               }
             }
           }
-          // Wait for 10 seconds before starting the next cycle
-          //await new Promise(resolve => setTimeout(resolve, 10000));
         }
       }
     } catch (error) {
       console.error('Error connecting to device:', error);
     }
   }
-  
-  
+
   scheduleNextRead() {
-    // Aggiungi la prossima lettura alla coda dopo 3 secondi
     this.readQueue.push(
       setTimeout(() => this.startReadingCharacteristics(), 1000),
     );
@@ -135,14 +180,13 @@ class BLEReader extends Component {
   render() {
     return (
       <View>
-        <Text>Valore della caratteristica: {this.connectedDevice}</Text>
+        <Text>Valore della caratteristica: {this.characteristicValue}</Text>
         <Button title="Disconnetti" onPress={this.disconnectDevice} />
       </View>
     );
   }
 
   componentWillUnmount() {
-    // Pulisci la coda di lettura quando il componente viene smontato
     this.readQueue.forEach(timeoutId => clearTimeout(timeoutId));
   }
 }
