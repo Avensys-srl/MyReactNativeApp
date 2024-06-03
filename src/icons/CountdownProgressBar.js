@@ -46,7 +46,7 @@ const CountdownProgressBar = ({
       <Text style={{marginBottom: 12}}>{rv}</Text>
       <View {...panResponder.panHandlers}>
         <Progress.Bar
-          progress={progress}
+          progress={Number(progress)}
           width={width * 0.93}
           height={25}
           borderRadius={18}

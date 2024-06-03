@@ -1,10 +1,11 @@
 // Importa le librerie necessarie
 import React, {Component} from 'react';
-import {View, Text, SafeAreaView, ScrollView, Pressable} from 'react-native';
+import {View, Text, SafeAreaView, ScrollView, Pressable, Linking} from 'react-native';
 import styles from '../styles/styles.js';
 import QRCodeGeneratorWithSharing from '../icons/QRCodeGeneratorWithSharing.js';
 import {eepromData, debugData, pollingData} from '../function/Data.js';
 import InfoText from '../icons/Controls.js';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 class InfoScreen extends Component {
   constructor(props) {
@@ -61,6 +62,12 @@ class InfoScreen extends Component {
     this.props.navigation.navigate('BLEScreen');
   };
 
+  handleOpenLink = () => {
+    const url = `https://g5c5rcqqjl.execute-api.eu-central-1.amazonaws.com/api/rispondi?address=${eepromData.SerialString}&topic=polling`; // Adjust URL as needed
+    Linking.openURL(url).catch(err => console.error('An error occurred', err));
+  }
+
+
   render() {
     const QRstring =
       eepromData.SerialString +
@@ -100,6 +107,16 @@ class InfoScreen extends Component {
               </Text>
             </View>
           )}
+          {this.state.eepromlist.length > 0 && (
+            <View>
+            <Text style={styles.sectionDescription}>{'SERIAL NUMBER'}</Text>
+            <Pressable onPress={this.handleOpenLink}>
+            <Text style={styles.sectionDescription}>{eepromData.SerialString}</Text>
+            </Pressable>
+              <Text style={styles.sectionDescription}>{'EEPROM DATA'}</Text>
+              <View>{this.state.eepromlist}</View>
+            </View>
+          )}
           {this.state.pollinglist.length > 0 && (
             <View>
               <Text style={styles.sectionDescription}>{'POLLING DATA'}</Text>
@@ -110,13 +127,6 @@ class InfoScreen extends Component {
             <View>
               <Text style={styles.sectionDescription}>{'DEBUG DATA'}</Text>
               <View>{this.state.debuglist}</View>
-            </View>
-          )}
-
-          {this.state.eepromlist.length > 0 && (
-            <View>
-              <Text style={styles.sectionDescription}>{'EEPROM DATA'}</Text>
-              <View>{this.state.eepromlist}</View>
             </View>
           )}
         </ScrollView>

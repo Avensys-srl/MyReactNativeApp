@@ -122,6 +122,27 @@ const styles = StyleSheet.create({
     color: Colors.dark,
     textAlign: 'center',
   },
+  deviceItem: {
+    padding: 15,
+    backgroundColor: '#fff',
+    marginVertical: 8,
+    marginHorizontal: 16,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: '#ccc',
+  },
+  deviceName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  deviceId: {
+    fontSize: 14,
+    color: '#888',
+  },
+  deviceRssi: {
+    fontSize: 12,
+    color: '#555',
+  },
 });
 
 export default styles;
