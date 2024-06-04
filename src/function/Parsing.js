@@ -1,4 +1,4 @@
-import {eepromData, debugData, pollingData} from './Data.js';
+import {eepromData, debugData, pollingData, WifiData} from './Data.js';
 
 const HW1 = ['PIR', 'BPD', 'AWP', 'CWD', 'EHD', 'HWD', 'PHWD', 'PEHD'];
 const HW2 = ['DPS', 'PCAF', 'PCAP', 'INPUT', 'OUT', 'DDPV2', 'RFM', 'MBUS'];
@@ -30,6 +30,29 @@ const EN_FUNC2 = [
 export function convertUint8ArrayToByteArray(uint8Array) {
   const byteArray = Array.from(uint8Array);
   return byteArray;
+}
+
+function uint8ArrayToString(uint8Array){
+  // Costruzione della stringa dai codici UTF-8
+  let str = '';
+  for (let i = 0; i < uint8Array.length; i++) {
+    str += String.fromCharCode(uint8Array[i]);
+  }
+  
+  // Rimozione degli spazi finali dalla stringa
+  //str = str.trimEnd();
+
+  return str;
+};
+
+export function readWifiSSID(uint8Array)
+{
+  WifiData.WifiSSID = uint8ArrayToString(uint8Array);
+}
+
+export function readWifiPassword(uint8Array)
+{
+  WifiData.WifiPSWD = uint8ArrayToString(uint8Array);
 }
 
 function getBitsFromArray(bitString, stringsArray) {
@@ -88,7 +111,7 @@ export function parseUint8ArrayToEEPROM(uint8Array) {
   if (
     uint8Array[58] + uint8Array[128] + uint8Array[152] + uint8Array[237] > 0 &&
     eepromData.cntUpdate_info == uint8Array[58] &&
-    eepromData.cntUpdate_SettingPar == uint8Array[126] &&
+    eepromData.cntUpdate_SettingPar == uint8Array[128] &&
     eepromData.cntUpdate_SetTemp == uint8Array[152] &&
     eepromData.cntUpdate_dayProg == uint8Array[237]
   ) {
@@ -251,6 +274,14 @@ export function parseUint8ArrayToEEPROM(uint8Array) {
     eepromData.cntUpdate_dayProg = uint8Array[239];
     eepromData.none = uint8Array[240];
     eepromData.version_eeprom = String.fromCharCode(uint8Array[241]);
+    eepromData.Function1 = getBitsFromArray(
+      eepromData.Enab_Fuction1.toString(2).padStart(8, '0'),
+      EN_FUNC1,
+    );
+    eepromData.Function2 = getBitsFromArray(
+      eepromData.Enab_Fuction2.toString(2).padStart(8, '0'),
+      EN_FUNC2,
+    );
   }
 }
 

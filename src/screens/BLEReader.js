@@ -8,8 +8,10 @@ import {
   parseUint8ArrayToPolling,
   convertEEPROMToUint8Array,
   convertUint8ArrayToByteArray,
+  readWifiSSID,
+  readWifiPassword,
 } from '../function/Parsing.js';
-import { eepromData } from '../function/Data.js';
+import { eepromData, WifiData } from '../function/Data.js';
 
 const BleManagerModule = NativeModules.BleManager;
 const bleManagerEmitter = new NativeEventEmitter(BleManagerModule);
@@ -219,6 +221,22 @@ class BLEReader extends Component {
               try {
                 let data = await BleManager.read(this.connectedDevice, characteristic.service, characteristic.characteristic);
                 parseUint8ArrayToPolling(data);
+              } catch (error) {
+                console.error('Error reading characteristic:', error);
+              }
+            } else if (characteristic.characteristic === 'ff05') {
+              try {
+                let data = await BleManager.read(this.connectedDevice, characteristic.service, characteristic.characteristic);
+                readWifiSSID(data);
+                //console.debug('WiFiSSID read: ',  data);
+              } catch (error) {
+                console.error('Error reading characteristic:', error);
+              }
+            }else if (characteristic.characteristic === 'ff06') {
+              try {
+                let data = await BleManager.read(this.connectedDevice, characteristic.service, characteristic.characteristic);
+                readWifiPassword(data);
+                //console.debug('WiFiPSWD read: ', data);
               } catch (error) {
                 console.error('Error reading characteristic:', error);
               }

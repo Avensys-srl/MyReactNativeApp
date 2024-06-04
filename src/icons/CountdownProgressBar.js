@@ -10,6 +10,7 @@ const CountdownProgressBar = ({
   init_val,
   onValueChange,
 }) => {
+  init_val = Number(init_val);
   const [progress, setProgress] = useState(init_val);
 
   const mv = min_val;

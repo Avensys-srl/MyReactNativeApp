@@ -12,7 +12,7 @@ import {
 import styles from '../styles/styles.js';
 import BLEReader from './BLEReader.js';
 import CountdownProgressBar from '../icons/CountdownProgressBar.js';
-import { eepromData, pollingData, debugData } from '../function/Data.js';
+import { eepromData, pollingData, debugData, WifiData } from '../function/Data.js';
 import InfoText from '../icons/Controls.js';
 import { convertEEPROMToUint8Array } from '../function/Parsing.js';
 
@@ -37,6 +37,9 @@ class BLEScreen extends Component {
       devices: [],
       connected: false,
       scanning: null,
+      wifi: null,
+      password: null, 
+      boost: null,
     };
 
     this.bluetooth = new BLEReader({ onDeviceFound: this.handleDeviceFound });
@@ -63,6 +66,9 @@ class BLEScreen extends Component {
         serial: prevState.isFirstCycle && eepromData.SerialString > 0 ? eepromData.SerialString : prevState.serial,
         isFirstCycle: false,
         scanning: this.bluetooth.scanning,
+        wifi: WifiData.WifiSSID,
+        password: WifiData.WifiPSWD,
+        boost: eepromData.Enab_Fuction1 === 51 ? true : false,
       }));
     }, 1000);
   }
@@ -109,6 +115,18 @@ class BLEScreen extends Component {
     eepromData.ValueChange = 1;
     console.debug(newEEPROM);
   };
+
+  updateBoost = (value) => {
+    if (value)
+      eepromData.Enab_Fuction1 = 49;
+    else
+      eepromData.Enab_Fuction1 = 51;
+    console.debug('BOOST', value);
+    const newEEPROM = convertEEPROMToUint8Array(eepromData);
+    eepromData.ValueChange = 1;
+    console.debug(newEEPROM);
+  };
+
 
   calculateDistance(rssi, A = -67, n = 2) {
     if (rssi === 0) {
@@ -166,8 +184,7 @@ class BLEScreen extends Component {
               data={this.state.devices}
               renderItem={this.renderDeviceItem}
               keyExtractor={item => item.id}
-            />
-            
+            />            
           </SafeAreaView>
         );
       }
@@ -220,6 +237,9 @@ class BLEScreen extends Component {
             <Text style={styles.BPButtonText}>3</Text>
           </Pressable>
         </View>
+        <Pressable style={styles.scanButton} onPress={() => this.updateBoost(this.state.boost)}>
+            <Text style={styles.scanButtonText}>{this.state.boost ? 'Boost OFF' : 'Boost ON'}</Text>
+          </Pressable>
         <View style={styles.buttonContainer}>
           <Text style={styles.TitleText}>Bypass Control</Text>
         </View>
@@ -244,6 +264,8 @@ class BLEScreen extends Component {
         <InfoText descr="CO2 Level" value={this.state.CO2 + ' PPM'} />
         <InfoText descr="VOC Level" value={this.state.VOC + ' PPM'} />
         <InfoText descr="Bypass" value={this.state.Bypass === 0 ? 'Automatic' : this.state.Bypass === 3 ? 'Open' : this.state.Bypass === 4 ? 'Close' : 'Unknown'} />
+        <InfoText descr="WiFi - SSID" value={this.state.wifi} />
+        <InfoText descr="WiFi - Password" value={this.state.password} />
         </ScrollView>
       </SafeAreaView>
     );

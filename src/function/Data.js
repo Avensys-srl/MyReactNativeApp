@@ -106,6 +106,8 @@ class EEPROM_DATA_TAG {
 
     this.previousState = this.serialize();
     this.ValueChange = 0;
+    this.Function1 = 0;
+    this.Function2 = 0;
   }
 
   serialize() {
@@ -217,6 +219,15 @@ class POLLING_DATA_TAG {
   }
 }
 
+class WIFI_TAG
+{
+  constructor() {
+    this.WifiSSID = 0;
+    this.WifiPSWD = 0;
+  } 
+}
+
 export const eepromData = new EEPROM_DATA_TAG();
 export const debugData = new DEBUG_DATA_TAG();
 export const pollingData = new POLLING_DATA_TAG();
+export const WifiData = new WIFI_TAG();

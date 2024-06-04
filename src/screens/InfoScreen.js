@@ -3,9 +3,9 @@ import React, {Component} from 'react';
 import {View, Text, SafeAreaView, ScrollView, Pressable, Linking} from 'react-native';
 import styles from '../styles/styles.js';
 import QRCodeGeneratorWithSharing from '../icons/QRCodeGeneratorWithSharing.js';
-import {eepromData, debugData, pollingData} from '../function/Data.js';
+import {eepromData, debugData, pollingData, WifiData} from '../function/Data.js';
 import InfoText from '../icons/Controls.js';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+
 
 class InfoScreen extends Component {
   constructor(props) {
@@ -113,6 +113,8 @@ class InfoScreen extends Component {
             <Pressable onPress={this.handleOpenLink}>
             <Text style={styles.sectionDescription}>{eepromData.SerialString}</Text>
             </Pressable>
+            <Text style={styles.sectionDescription}>{'WIFI: ' + WifiData.WifiSSID}</Text>
+            <Text style={styles.sectionDescription}>{'Password: ' + WifiData.WifiPSWD}</Text>
               <Text style={styles.sectionDescription}>{'EEPROM DATA'}</Text>
               <View>{this.state.eepromlist}</View>
             </View>
