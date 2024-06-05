@@ -4,7 +4,7 @@ import {View, Text, SafeAreaView, ScrollView, Pressable, Linking} from 'react-na
 import styles from '../styles/styles.js';
 import QRCodeGeneratorWithSharing from '../icons/QRCodeGeneratorWithSharing.js';
 import {eepromData, debugData, pollingData, WifiData} from '../function/Data.js';
-import InfoText from '../icons/Controls.js';
+import {InfoText} from '../icons/Controls.js';
 
 
 class InfoScreen extends Component {

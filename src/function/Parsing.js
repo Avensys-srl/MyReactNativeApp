@@ -8,7 +8,7 @@ const HW4 = ['---', '---', '---', '---', 'EXT4', 'EXT3', 'EXT2', 'EXT1'];
 const EN_FUNC1 = [
   'CAF',
   'CAP',
-  'CSF',
+  'FSC',
   'ImbalanON',
   'STPL',
   'WeeklyON',
@@ -18,11 +18,11 @@ const EN_FUNC1 = [
 
 const EN_FUNC2 = [
   '---',
-  '---',
-  '---',
-  '---',
-  '---',
-  'CLIMA',
+  'MBF',
+  'DPP',
+  'PREHEATING',
+  'EN_SUMMER',
+  'EN_WINTER',
   'CtrlFilter',
   'PASSWORD',
 ];
@@ -33,14 +33,10 @@ export function convertUint8ArrayToByteArray(uint8Array) {
 }
 
 function uint8ArrayToString(uint8Array){
-  // Costruzione della stringa dai codici UTF-8
   let str = '';
   for (let i = 0; i < uint8Array.length; i++) {
     str += String.fromCharCode(uint8Array[i]);
   }
-  
-  // Rimozione degli spazi finali dalla stringa
-  //str = str.trimEnd();
 
   return str;
 };
@@ -282,6 +278,7 @@ export function parseUint8ArrayToEEPROM(uint8Array) {
       eepromData.Enab_Fuction2.toString(2).padStart(8, '0'),
       EN_FUNC2,
     );
+
   }
 }
 

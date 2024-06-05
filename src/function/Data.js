@@ -103,7 +103,6 @@ class EEPROM_DATA_TAG {
     this.cntUpdate_dayProg = 0;
     this.none = 0;
     this.version_eeprom = 0;
-
     this.previousState = this.serialize();
     this.ValueChange = 0;
     this.Function1 = 0;
@@ -143,6 +142,36 @@ class EEPROM_DATA_TAG {
       }
     }
     return true;
+  }
+
+  isBoostEnabled() {
+    // Verifica se il bit in posizione 1 di Enab_Fuction1 è acceso
+    return (this.Enab_Fuction1 & 2) !== 0;
+  }
+
+  toggleBoost() {
+    // Toggle dello stato del bit in posizione 1 di Enab_Fuction1
+    this.Enab_Fuction1 ^= 2;
+  }
+
+  setValueByKey(key, value) {
+    // Imposta il valore della variabile corrispondente alla chiave specificata
+    if (typeof this[key] !== 'undefined') {
+      this[key] = value;
+      this.ValueChange = 1;
+    } else {
+      console.error(`La chiave "${key}" non esiste nella classe EEPROM_DATA_TAG.`);
+    }
+  }
+
+  getValueByKey(key) {
+    // Restituisce il valore della variabile corrispondente alla chiave specificata
+    if (typeof this[key] !== 'undefined') {
+      return this[key];
+    } else {
+      console.error(`La chiave "${key}" non esiste nella classe EEPROM_DATA_TAG.`);
+      return undefined;
+    }
   }
 }
 
@@ -217,6 +246,30 @@ class POLLING_DATA_TAG {
     this.cntUpdate_eeprom_weekly = 0;
     this.MeasAWP = 0;
   }
+
+  // Function to analyze alarms and return error codes
+  analyzeAlarms() {
+    const alarmCodes = [];
+
+    for (let i = 0; i <= 12; i++) {
+      const alarmValue = this[`Alarm${String(i).padStart(2, '0')}`];
+      const bits = alarmValue.toString(2).padStart(8, '0').split('').reverse();
+
+      bits.forEach((bit, index) => {
+        if (bit === '1') {
+          alarmCodes.push(`${String(i).padStart(2, '0')}-${index + 1}`);
+        }
+      });
+    }
+
+    return alarmCodes;
+  }
+
+  getAlarmString() {
+    const alarmCodes = this.analyzeAlarms();
+    return alarmCodes.join(' ');
+  }
+
 }
 
 class WIFI_TAG

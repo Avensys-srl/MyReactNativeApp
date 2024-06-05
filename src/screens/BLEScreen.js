@@ -13,7 +13,7 @@ import styles from '../styles/styles.js';
 import BLEReader from './BLEReader.js';
 import CountdownProgressBar from '../icons/CountdownProgressBar.js';
 import { eepromData, pollingData, debugData, WifiData } from '../function/Data.js';
-import InfoText from '../icons/Controls.js';
+import {InfoText, EditableInfoRow} from '../icons/Controls.js';
 import { convertEEPROMToUint8Array } from '../function/Parsing.js';
 
 class BLEScreen extends Component {
@@ -40,6 +40,8 @@ class BLEScreen extends Component {
       wifi: null,
       password: null, 
       boost: null,
+      alarm: null,
+      pulse: null,
     };
 
     this.bluetooth = new BLEReader({ onDeviceFound: this.handleDeviceFound });
@@ -68,7 +70,9 @@ class BLEScreen extends Component {
         scanning: this.bluetooth.scanning,
         wifi: WifiData.WifiSSID,
         password: WifiData.WifiPSWD,
-        boost: eepromData.Enab_Fuction1 === 51 ? true : false,
+        boost: eepromData.isBoostEnabled(),
+        alarm: pollingData.getAlarmString(),
+        pulse: eepromData.numPulseMotors,
       }));
     }, 1000);
   }
@@ -116,12 +120,9 @@ class BLEScreen extends Component {
     console.debug(newEEPROM);
   };
 
-  updateBoost = (value) => {
-    if (value)
-      eepromData.Enab_Fuction1 = 49;
-    else
-      eepromData.Enab_Fuction1 = 51;
-    console.debug('BOOST', value);
+  updateBoost = () => {
+    eepromData.toggleBoost()
+    console.debug('BOOST', eepromData.isBoostEnabled());
     const newEEPROM = convertEEPROMToUint8Array(eepromData);
     eepromData.ValueChange = 1;
     console.debug(newEEPROM);
@@ -212,9 +213,9 @@ class BLEScreen extends Component {
           <Pressable style={styles.scanButton} onPress={this.navigateToInfo}>
             <Text style={styles.scanButtonText}>All Data</Text>
           </Pressable>
-          <Pressable style={styles.scanButton}>
+         {/* <Pressable style={styles.scanButton}>
             <Text style={styles.scanButtonText}>Disconnect</Text>
-          </Pressable>
+          </Pressable>*/}
           <CountdownProgressBar
             label="Airflow"
             key={this.state.airflow}
@@ -237,7 +238,7 @@ class BLEScreen extends Component {
             <Text style={styles.BPButtonText}>3</Text>
           </Pressable>
         </View>
-        <Pressable style={styles.scanButton} onPress={() => this.updateBoost(this.state.boost)}>
+        <Pressable style={styles.scanButton} onPress={() => this.updateBoost()}>
             <Text style={styles.scanButtonText}>{this.state.boost ? 'Boost OFF' : 'Boost ON'}</Text>
           </Pressable>
         <View style={styles.buttonContainer}>
@@ -254,6 +255,18 @@ class BLEScreen extends Component {
             <Text style={styles.BPButtonText}>Automatic</Text>
           </Pressable>
         </View>
+
+        <View>
+          <InfoText descr="Alarm list" value={this.state.alarm} textcolor="red" />
+          {this.state.pulse !== 0 && (
+            <EditableInfoRow
+              label="numPulseMotors"
+              initialValue={String(this.state.pulse)}
+              onSubmitEditing={(newValue) => eepromData.setValueByKey('numPulseMotors', Number(newValue))}
+            />
+          )}
+        </View>
+
         <InfoText descr="Return Temperature" value={this.state.TR / 10 + ' °C'} />
         <InfoText descr="Fresh Temperature" value={this.state.TF / 10 + ' °C'} />
         <InfoText descr="Supply Temperature" value={this.state.TS / 10 + ' °C'} />

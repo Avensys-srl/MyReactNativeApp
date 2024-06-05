@@ -1,8 +1,15 @@
-import React from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TextInput, StyleSheet } from 'react-native';
+import colors from '../styles/colors';
 
-function InfoText({descr, value}) {
+const InfoText = ({ descr, value, textcolor }) => {
   const formattedValue = Array.isArray(value) ? value.join(' - ') : value;
+
+  // Ottieni il valore del colore dal nome del colore, se esiste
+  const colorValue = colors[textcolor] || textcolor;
+
+  // Crea uno stile dinamico che include `colorValue` se è definito
+  const rightTextStyle = colorValue ? { ...styles.right, color: colorValue } : styles.right;
 
   return (
     <View style={styles.row}>
@@ -10,12 +17,38 @@ function InfoText({descr, value}) {
         <Text>{descr}:</Text>
       </View>
       <View style={styles.right}>
-        <Text>{formattedValue}</Text>
+        <Text style={rightTextStyle}>{formattedValue}</Text>
       </View>
     </View>
   );
 }
 
+const EditableInfoRow = ({ label, initialValue, onSubmitEditing }) => {
+  const [value, setValue] = useState(initialValue);
+
+  const handleChange = (text) => {
+    setValue(text);
+  };
+
+  const handleSubmitEditing = () => {
+    // Esegui la funzione specificata quando l'utente preme "Invio"
+    if (onSubmitEditing) {
+      onSubmitEditing(value);
+    }
+  };
+
+  return (
+    <View style={styles.row}>
+      <Text style={styles.label}>{label}:</Text>
+      <TextInput
+        style={styles.input}
+        value={value}
+        onChangeText={handleChange}
+        onSubmitEditing={handleSubmitEditing}
+      />
+    </View>
+  );
+};
 const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
@@ -23,6 +56,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
+    verticalAlign: 'center',
   },
   left: {
     flex: 1,
@@ -32,6 +66,14 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'flex-end',
   },
+  label: {
+    flex: 1,
+    textAlign: 'left',
+  },
+  input: {
+    flex: 1,
+    textAlign: 'right',
+  },
 });
 
-export default InfoText;
+export { InfoText, EditableInfoRow };
