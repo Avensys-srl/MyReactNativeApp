@@ -85,6 +85,10 @@ class BLEScreen extends Component {
     this.props.navigation.navigate('InfoScreen');
   };
 
+  navigateToEdit = () => {
+    this.props.navigation.navigate('AdvEditing');
+  };
+
   handleDeviceFound = (devices) => {
     const filteredDevices = devices.filter(device => device.name && device.name.startsWith('AVENSYS'));
     this.setState({ devices: filteredDevices });
@@ -210,9 +214,14 @@ class BLEScreen extends Component {
     return (
       <SafeAreaView style={styles.body}>
         <ScrollView>
-          <Pressable style={styles.scanButton} onPress={this.navigateToInfo}>
+        <View style={styles.buttonContainer}>
+          <Pressable style={styles.BPButton} onPress={this.navigateToInfo}>
             <Text style={styles.scanButtonText}>All Data</Text>
           </Pressable>
+          <Pressable style={styles.BPButton} onPress={this.navigateToEdit}>
+            <Text style={styles.scanButtonText}>Adv Edit</Text>
+          </Pressable>
+        </View>
          {/* <Pressable style={styles.scanButton}>
             <Text style={styles.scanButtonText}>Disconnect</Text>
           </Pressable>*/}
