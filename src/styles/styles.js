@@ -1,5 +1,6 @@
 import {StyleSheet} from 'react-native';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
+import colors from './colors';
 
 const boxShadow = {
   shadowColor: '#000',
@@ -49,9 +50,18 @@ const styles = StyleSheet.create({
     color: Colors.white,
   },
   TitleText: {
-    fontSize: 16,
-    letterSpacing: 0.25,
+    fontSize: 18,
+    //fontWeight: 'bold',
+    //color: colors.black,
+    textAlign: 'center', // Center the text horizontally
+    marginHorizontal: 20, // Margin of 20 on the left and right
+    marginTop: 20, // Margin of 20 on the top
+  },
+  sectionTitle: {
     justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 32,
+    paddingHorizontal: 24,
   },
   buttonContainer: {
     flexDirection: 'row', // Imposta il layout in una riga
@@ -66,9 +76,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
   sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: Colors.black,
+    fontSize: 16,
+    //fontWeight: '600',
+    color: colors.gray,
   },
   sectionDescription: {
     marginTop: 8,
