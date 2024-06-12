@@ -38,7 +38,7 @@ class DeviceSelection extends Component {
       this.setState({ connected: true }); // Update connected state
       const { setDevice } = this.context;
       setDevice(device);
-      this.props.navigation.navigate('Configurator');
+      this.props.navigation.navigate('MainTabs');
     });
   };
 
