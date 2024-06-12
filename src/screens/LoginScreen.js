@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, TextInput, Image, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
+import { View, Text, TextInput, Image, TouchableOpacity, StyleSheet, SafeAreaView, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import RNBounceable from '@freakycoder/react-native-bounceable';
+import BouncyCheckbox, {
+  BouncyCheckboxHandle,
+} from 'react-native-bouncy-checkbox';
 import { useNavigation } from '@react-navigation/native';
 import colors from '../styles/colors';
 
@@ -22,22 +26,27 @@ const LoginScreen = () => {
   const navigation = useNavigation();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [language, setLanguage] = useState('en');
+  const [language, setLanguage] = useState(i18n.language);
+  const [stayLoggedIn, setStayLoggedIn] = useState(false);
 
   useEffect(() => {
-    const loadLanguage = async () => {
-      const storedLanguage = await AsyncStorage.getItem('userLanguage');
-      setLanguage(storedLanguage || 'en');
-      i18n.changeLanguage(storedLanguage || 'en');
-    };
-    loadLanguage();
+    checkLoginStatus();
   }, []);
+
+  const checkLoginStatus = async () => {
+    const userCredentials = await AsyncStorage.getItem('userCredentials');
+    const stayLoggedInFlag = await AsyncStorage.getItem('stayLoggedIn');
+    if (userCredentials && stayLoggedInFlag === 'true') {
+      navigation.replace('DeviceSelection');
+    }
+  };
 
   const handleLogin = async () => {
     if (username && password) {
       await AsyncStorage.setItem('userCredentials', JSON.stringify({ username, password }));
       await AsyncStorage.setItem('userLanguage', language);
-      navigation.replace('BLEScreen');
+      await AsyncStorage.setItem('stayLoggedIn', stayLoggedIn.toString());
+      navigation.replace('DeviceSelection');
     } else {
       alert(t('error'));
     }
@@ -46,9 +55,6 @@ const LoginScreen = () => {
   const handleLanguageChange = async (selectedLanguage) => {
     setLanguage(selectedLanguage);
     i18n.changeLanguage(selectedLanguage);
-    await AsyncStorage.setItem('userLanguage', selectedLanguage);
-    // Forza un aggiornamento della schermata
-    //navigation.navigate('LoginScreen');
   };
 
   return (
@@ -68,6 +74,24 @@ const LoginScreen = () => {
           secureTextEntry
           onChangeText={setPassword}
         />
+        <View style={styles.checkboxContainer}>
+            <BouncyCheckbox
+            size={25}
+            style={styles.checkbox}
+            fillColor={colors.lightblue}
+            TouchableComponent={Pressable}
+            iconStyle={{borderColor: colors.lightblue}}
+            disableText={false}
+            unFillColor = {colors.white}
+            text={t('stay_logged_in')}
+            textStyle={{
+              //textAlign: 'center',
+              textDecorationLine: 'none',
+            }}
+            onPress={setStayLoggedIn}
+            isChecked = {stayLoggedIn}
+          />
+        </View>
         <View style={styles.flagsContainer}>
           {Object.keys(languages).map((lang, index) => (
             <React.Fragment key={lang}>
@@ -85,7 +109,9 @@ const LoginScreen = () => {
             </React.Fragment>
           ))}
         </View>
-        <Button title={t('login')} onPress={handleLogin} />
+        <TouchableOpacity onPress={handleLogin} style={styles.BPButton}>
+          <Text style={styles.BPButtonText}>{t('login')}</Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
@@ -110,19 +136,23 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   input: {
-    width: '80%',
-    height: 40,
+    width: '90%',
+    height: 50,
     borderColor: '#ccc',
     borderWidth: 1,
     borderRadius: 4,
     marginBottom: 12,
+    fontSize: 18,
     paddingHorizontal: 8,
+  },
+  label: {
+    margin: 8,
   },
   flagsContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     marginBottom: 24,
-    marginTop: 12,
+    marginTop: 24,
     flexWrap: 'wrap',
   },
   flag: {
@@ -144,6 +174,31 @@ const styles = StyleSheet.create({
   lineContainer: {
     width: '100%',
     alignItems: 'center',
+  },
+  BPButton: {
+    backgroundColor: colors.lightblue, // Colore di sfondo blu
+    borderRadius: 4,
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    marginTop: 20, // Spazio superiore
+    width: '90%',
+  },
+  BPButtonText: {
+    color: colors.white, // Colore del testo bianco
+    fontSize: 20,
+    textAlign: 'center',
+  },
+  checkbox: {
+    marginTop:8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  checkboxContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginBottom: 20,
+    alignItems: 'center',
+    width: '90%'
   },
 });
 

@@ -7,7 +7,7 @@
     "submit": "Invia",
     "error": "Errore",
     "choose_unit": "Per favore scegli la tua unità",
-    "loading_data": "Caricamento dati...",
+    "loading_data": "Caricamento dati prego attendere...",
     "all_data": "Tutti i dati",
     "adv_edit": "Modifica avanzata",
     "start_scan": "Inizia scansione",
@@ -32,6 +32,14 @@
     "voc_level": "Livello VOC",
     "bypass": "Bypass",
     "wifi_ssid": "WiFi - SSID",
-    "wifi_password": "WiFi - Password"
+    "wifi_password": "WiFi - Password",
+    "serial": "Numero Seriale",
+    "HW_vers": "Versione Hardware",
+    "SW_vers": "Version Software",
+    "info": "Informationi Principali",
+    "distance" : "Distanza",
+    "meters" : "metri",
+    "stay_logged_in": "mantienimi connesso",
+    "disconnect": "Disconnetti",
   }
   

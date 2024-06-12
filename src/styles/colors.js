@@ -17,6 +17,7 @@ const colors = {
     lime: '#00FF00',
     aqua: '#00FFFF',
     fuchsia: '#FF00FF',
+    lightblue: '#0a398a',
     // Add more colors as needed
   };
   

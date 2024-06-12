@@ -1,5 +1,7 @@
-import {StyleSheet} from 'react-native';
-import {Colors} from 'react-native/Libraries/NewAppScreen';
+// styles.js
+
+import { StyleSheet } from 'react-native';
+import { Colors } from 'react-native/Libraries/NewAppScreen';
 import colors from './colors';
 
 const boxShadow = {
@@ -14,6 +16,7 @@ const boxShadow = {
 };
 
 const styles = StyleSheet.create({
+  // ...altri stili
   engine: {
     position: 'absolute',
     right: 10,
@@ -24,7 +27,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 16,
-    backgroundColor: '#0a398a',
+    backgroundColor: colors.lightblue,
     margin: 10,
     borderRadius: 12,
     ...boxShadow,
@@ -51,8 +54,6 @@ const styles = StyleSheet.create({
   },
   TitleText: {
     fontSize: 18,
-    //fontWeight: 'bold',
-    //color: colors.black,
     textAlign: 'center', // Center the text horizontally
     marginHorizontal: 20, // Margin of 20 on the left and right
     marginTop: 20, // Margin of 20 on the top
@@ -124,7 +125,7 @@ const styles = StyleSheet.create({
   noPeripherals: {
     margin: 10,
     textAlign: 'center',
-    color: Colors.white,
+    color: colors.white,
   },
   BtnText: {
     fontSize: 16,
@@ -152,6 +153,45 @@ const styles = StyleSheet.create({
   deviceRssi: {
     fontSize: 12,
     color: '#555',
+  },
+  image: {
+    width: '60%',
+    height: undefined,
+    aspectRatio: 1,
+    resizeMode: 'contain',
+    marginBottom: 24,
+  },
+  image_container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 5,
+  },
+  deviceItemContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  deviceTextContainer: {
+    flex: 1,
+  },
+  deviceIcon: {
+    width: 50,
+    height: 50,
+  },
+  disconnectButton: {
+    backgroundColor: colors.red,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 16,
+    margin: 10,
+    borderRadius: 12,
+    ...boxShadow,
+  },
+  disconnectButtonText: {
+    fontSize: 20,
+    letterSpacing: 0.25,
+    color: colors.white,
   },
 });
 

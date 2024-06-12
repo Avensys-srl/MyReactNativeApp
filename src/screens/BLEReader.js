@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { View, Text, Button} from 'react-native';
+import { View, Text, Button } from 'react-native';
 import BleManager from 'react-native-ble-manager';
-import { NativeEventEmitter, NativeModules, Platform, PermissionsAndroid, } from 'react-native';
+import { NativeEventEmitter, NativeModules, Platform, PermissionsAndroid } from 'react-native';
 import {
   parseUint8ArrayToEEPROM,
   parseUint8ArrayToDebug,
@@ -27,6 +27,7 @@ class BLEReader extends Component {
     this.peripherals = new Map();
     this.rssiValues = new Map();
     this.scanning = null;
+    this.keepReading = false; // Variabile di controllo per il ciclo di lettura
   }
 
   componentDidMount() {
@@ -48,42 +49,28 @@ class BLEReader extends Component {
     this.handlerUpdate.remove();
   }
 
-   handleAndroidPermissions = () => {
+  handleAndroidPermissions = () => {
     if (Platform.OS === 'android' && Platform.Version >= 31) {
       PermissionsAndroid.requestMultiple([
         PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN,
         PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
       ]).then(result => {
         if (result) {
-          console.debug(
-            '[handleAndroidPermissions] User accepts runtime permissions android 12+',
-          );
+          console.debug('[handleAndroidPermissions] User accepts runtime permissions android 12+');
         } else {
-          console.error(
-            '[handleAndroidPermissions] User refuses runtime permissions android 12+',
-          );
+          console.error('[handleAndroidPermissions] User refuses runtime permissions android 12+');
         }
       });
     } else if (Platform.OS === 'android' && Platform.Version >= 23) {
-      PermissionsAndroid.check(
-        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-      ).then(checkResult => {
+      PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION).then(checkResult => {
         if (checkResult) {
-          console.debug(
-            '[handleAndroidPermissions] runtime permission Android <12 already OK',
-          );
+          console.debug('[handleAndroidPermissions] runtime permission Android <12 already OK');
         } else {
-          PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-          ).then(requestResult => {
+          PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION).then(requestResult => {
             if (requestResult) {
-              console.debug(
-                '[handleAndroidPermissions] User accepts runtime permission android <12',
-              );
+              console.debug('[handleAndroidPermissions] User accepts runtime permission android <12');
             } else {
-              console.error(
-                '[handleAndroidPermissions] User refuses runtime permission android <12',
-              );
+              console.error('[handleAndroidPermissions] User refuses runtime permission android <12');
             }
           });
         }
@@ -91,15 +78,16 @@ class BLEReader extends Component {
     }
   };
 
-
-
   startScan() {
-    this.scanning = true;
-    BleManager.scan([], 5, true).then(() => {
-      console.log('Scanning...');
-      
-    }).catch(err => {
-      console.error('Error starting scan', err);
+    return new Promise((resolve, reject) => {
+      this.scanning = true;
+      BleManager.scan([], 5, true).then(() => {
+        console.log('Scanning...');
+        resolve();
+      }).catch(err => {
+        console.error('Error starting scan', err);
+        reject(err);
+      });
     });
   }
 
@@ -121,7 +109,6 @@ class BLEReader extends Component {
     this.props.onDeviceFound(Array.from(this.peripherals.values()));
   };
 
-
   handleStopScan = () => {
     console.log('Scan is stopped');
     this.scanning = false;
@@ -137,6 +124,7 @@ class BLEReader extends Component {
       this.peripherals.set(peripheral.id, peripheral);
     }
     console.log('Disconnected from ' + data.peripheral);
+    this.keepReading = false; // Interrompe la lettura quando il dispositivo è disconnesso
   };
 
   handleUpdateValueForCharacteristic = (data) => {
@@ -151,6 +139,7 @@ class BLEReader extends Component {
       console.debug('Dispositivo connesso', deviceIdentifier);
 
       // Inizia la lettura delle caratteristiche
+      this.keepReading = true; // Imposta la variabile di controllo
       this.startReadingCharacteristics();
     } catch (error) {
       console.error('Errore nella connessione al dispositivo:', error);
@@ -179,8 +168,10 @@ class BLEReader extends Component {
         }
 
         // Main operation cycle
-        while (true) {
+        while (this.keepReading) { // Controlla la variabile di controllo
           for (let characteristic of peripheralData.characteristics) {
+            if (!this.keepReading) break; // Esce dal ciclo se keepReading è false
+
             if (characteristic.characteristic === 'ff01') {
               console.debug('Value changed: ', eepromData.hasValueChanged());
               if (eepromData.hasValueChanged() && eepromData.AddrUnit) {
@@ -232,7 +223,7 @@ class BLEReader extends Component {
               } catch (error) {
                 console.error('Error reading characteristic:', error);
               }
-            }else if (characteristic.characteristic === 'ff06') {
+            } else if (characteristic.characteristic === 'ff06') {
               try {
                 let data = await BleManager.read(this.connectedDevice, characteristic.service, characteristic.characteristic);
                 readWifiPassword(data);
@@ -249,17 +240,28 @@ class BLEReader extends Component {
     }
   }
 
+  async disconnectDevice() {
+    try {
+      if (this.connectedDevice) {
+        await BleManager.disconnect(this.connectedDevice);
+        console.debug('Dispositivo disconnesso', this.connectedDevice);
+        this.connectedDevice = null;
+        this.keepReading = false; // Interrompe la lettura
+      }
+    } catch (error) {
+      console.error('Errore nella disconnessione dal dispositivo:', error);
+    }
+  }
+
   scheduleNextRead() {
-    this.readQueue.push(
-      setTimeout(() => this.startReadingCharacteristics(), 1000),
-    );
+    this.readQueue.push(setTimeout(() => this.startReadingCharacteristics(), 1000));
   }
 
   render() {
     return (
       <View>
         <Text>Valore della caratteristica: {this.characteristicValue}</Text>
-        <Button title="Disconnetti" onPress={this.disconnectDevice} />
+        <Button title="Disconnetti" onPress={() => this.disconnectDevice()} />
       </View>
     );
   }

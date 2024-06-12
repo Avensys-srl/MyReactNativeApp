@@ -7,7 +7,7 @@
     "submit": "Submit",
     "error": "Error",
     "choose_unit": "Please choose your unit",
-    "loading_data": "Loading data...",
+    "loading_data": "Data Loading please wait...",
     "all_data": "All Data",
     "adv_edit": "Adv Edit",
     "start_scan": "Start Scan",
@@ -32,6 +32,14 @@
     "voc_level": "VOC Level",
     "bypass": "Bypass",
     "wifi_ssid": "WiFi - SSID",
-    "wifi_password": "WiFi - Password"
+    "wifi_password": "WiFi - Password",
+    "serial": "Serial Number",
+    "HW_vers": "Hardware Version",
+    "SW_vers": "Software Version",
+    "info": "Main information",
+    "distance" : "Distance",
+    "meters" : "meters",
+    "stay_logged_in": "keep me logged",
+    "disconnect": "Disconnect",
   }
   

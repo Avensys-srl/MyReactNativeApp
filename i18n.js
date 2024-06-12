@@ -1,6 +1,7 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as RNLocalize from 'react-native-localize';
 
 import translationEN from './src/translations/en.json';
 import translationNL from './src/translations/nl.json';
@@ -44,34 +45,40 @@ const resources = {
 
 const getStoredLanguage = async () => {
   const storedLanguage = await AsyncStorage.getItem('userLanguage');
-  return storedLanguage || 'en'; // Default language
+  if (storedLanguage) {
+    return storedLanguage;
+  } else {
+    const systemLanguage = RNLocalize.getLocales()[0].languageCode;
+    console.log(systemLanguage);
+    return systemLanguage || 'en'; // Default to 'en' if system language is not available
+  }
 };
 
 const setStoredLanguage = async (language) => {
-    try {
-      await AsyncStorage.setItem('userLanguage', language);
-    } catch (error) {
-      console.error('Error saving language to AsyncStorage:', error);
-    }
-  };
-  
-  getStoredLanguage().then((language) => {
-    i18n
-      .use(initReactI18next)
-      .init({
-        resources,
-        lng: language,
-        fallbackLng: 'en',
-        interpolation: {
-          escapeValue: false,
-        },
-      });
-  });
-  
-  // Aggiungi questa funzione per aggiornare la lingua memorizzata
-  const changeLanguage = async (language) => {
-    await i18n.changeLanguage(language);
-    await setStoredLanguage(language); // Aggiorna la lingua memorizzata
-  };
-  
-  export default i18n;
+  try {
+    await AsyncStorage.setItem('userLanguage', language);
+  } catch (error) {
+    console.error('Error saving language to AsyncStorage:', error);
+  }
+};
+
+getStoredLanguage().then((language) => {
+  i18n
+    .use(initReactI18next)
+    .init({
+      resources,
+      lng: language,
+      fallbackLng: 'en',
+      interpolation: {
+        escapeValue: false,
+      },
+    });
+});
+
+// Aggiungi questa funzione per aggiornare la lingua memorizzata
+const changeLanguage = async (language) => {
+  await i18n.changeLanguage(language);
+  await setStoredLanguage(language); // Aggiorna la lingua memorizzata
+};
+
+export { i18n, changeLanguage };

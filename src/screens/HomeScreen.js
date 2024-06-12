@@ -16,8 +16,7 @@ import SI from '../assets/wrench-icon-original.png';
 
 const HomeScreen = () => {
   return (
-    <ScrollView style={styles.container}>
-      
+    <ScrollView style={styles.container}>      
       <CustomNavigation HI={HI} PI={PI} II={II} SI={SI} OC={0} />
     </ScrollView>
   );
