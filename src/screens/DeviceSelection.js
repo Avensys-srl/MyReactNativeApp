@@ -15,7 +15,6 @@ import { withTranslation } from 'react-i18next';
 import { BluetoothContext } from '../context/BluetoothContext';
 
 class DeviceSelection extends Component {
-
   constructor(props) {
     super(props);
     this.state = {
@@ -43,10 +42,9 @@ class DeviceSelection extends Component {
   };
 
   handleDisconnect = () => {
-    this.bluetooth.disconnectDevice().then(() => {
+    const { disconnect } = this.context;
+    disconnect().then(() => {
       this.setState({ connected: false }); // Update connected state
-      const { setDevice } = this.context;
-      setDevice(null);
     });
   };
 

@@ -8,6 +8,7 @@ const colors = {
     cyan: '#00FFFF',
     magenta: '#FF00FF',
     gray: '#808080',
+    lightgray: '#A0A0A0',
     maroon: '#800000',
     olive: '#808000',
     purple: '#800080',

@@ -1,12 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Image, TouchableOpacity, StyleSheet, SafeAreaView, Pressable } from 'react-native';
+// src/screens/LoginScreen.js
+
+import React, { useState, useEffect, useContext } from 'react';
+import {
+  View, Text, TextInput, Image, TouchableOpacity,
+  StyleSheet, SafeAreaView, Pressable, Alert
+} from 'react-native';
 import { useTranslation } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import RNBounceable from '@freakycoder/react-native-bounceable';
-import BouncyCheckbox, {
-  BouncyCheckboxHandle,
-} from 'react-native-bouncy-checkbox';
+import BouncyCheckbox from 'react-native-bouncy-checkbox';
 import { useNavigation } from '@react-navigation/native';
+import { ProfileContext } from '../context/ProfileContext';
 import colors from '../styles/colors';
 
 const languages = {
@@ -28,6 +31,7 @@ const LoginScreen = () => {
   const [password, setPassword] = useState('');
   const [language, setLanguage] = useState(i18n.language);
   const [stayLoggedIn, setStayLoggedIn] = useState(false);
+  const { setIsService } = useContext(ProfileContext);
 
   useEffect(() => {
     checkLoginStatus();
@@ -42,13 +46,20 @@ const LoginScreen = () => {
   };
 
   const handleLogin = async () => {
-    if (username && password) {
+    if (username === 'User' && password === '12345') {
+      setIsService(false);
+      await AsyncStorage.setItem('userCredentials', JSON.stringify({ username, password }));
+      await AsyncStorage.setItem('userLanguage', language);
+      await AsyncStorage.setItem('stayLoggedIn', stayLoggedIn.toString());
+      navigation.replace('DeviceSelection');
+    } else if (username === 'Service' && password === '02015') {
+      setIsService(true);
       await AsyncStorage.setItem('userCredentials', JSON.stringify({ username, password }));
       await AsyncStorage.setItem('userLanguage', language);
       await AsyncStorage.setItem('stayLoggedIn', stayLoggedIn.toString());
       navigation.replace('DeviceSelection');
     } else {
-      alert(t('error'));
+      Alert.alert(t('error'), t('Invalid username or password'));
     }
   };
 
@@ -75,21 +86,20 @@ const LoginScreen = () => {
           onChangeText={setPassword}
         />
         <View style={styles.checkboxContainer}>
-            <BouncyCheckbox
+          <BouncyCheckbox
             size={25}
             style={styles.checkbox}
             fillColor={colors.lightblue}
             TouchableComponent={Pressable}
-            iconStyle={{borderColor: colors.lightblue}}
+            iconStyle={{ borderColor: colors.lightblue }}
             disableText={false}
-            unFillColor = {colors.white}
+            unFillColor={colors.white}
             text={t('stay_logged_in')}
             textStyle={{
-              //textAlign: 'center',
               textDecorationLine: 'none',
             }}
             onPress={setStayLoggedIn}
-            isChecked = {stayLoggedIn}
+            isChecked={stayLoggedIn}
           />
         </View>
         <View style={styles.flagsContainer}>
@@ -189,7 +199,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   checkbox: {
-    marginTop:8,
+    marginTop: 8,
     justifyContent: 'center',
     alignItems: 'center',
   },

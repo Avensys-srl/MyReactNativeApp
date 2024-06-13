@@ -4,16 +4,21 @@ import {
   ScrollView,
   Text,
   View,
-  Image
+  Image,
+  Pressable,
+  StyleSheet,
 } from 'react-native';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../styles/styles.js';
 import { eepromData, pollingData, WifiData } from '../function/Data.js';
 import { InfoText } from '../icons/Controls.js';
 import { withTranslation } from 'react-i18next';
+import { ProfileContext } from '../context/ProfileContext';
+import colors from '../styles/colors.js';
+import { BluetoothContext } from '../context/BluetoothContext';
 
 class Configurator extends Component {
-
   constructor(props) {
     super(props);
 
@@ -27,6 +32,9 @@ class Configurator extends Component {
       password: null,
     };
   }
+
+  static contextType = ProfileContext;
+  static contextType = BluetoothContext;
 
   componentDidMount() {
     this.updateInterval = setInterval(() => {
@@ -46,9 +54,19 @@ class Configurator extends Component {
     clearInterval(this.updateInterval);
   }
 
+  handleLogout = async () => {
+    const { disconnect } = this.context; // Ottieni la funzione di disconnessione dal contesto Bluetooth
+    await AsyncStorage.removeItem('stayLoggedIn');
+    if (disconnect) disconnect(); // Disconnetti dal Bluetooth
+    this.props.navigation.replace('LoginScreen'); // Reindirizza alla schermata di login
+  };
+
   render() {
     const { t } = this.props;
     const { isDataAvailable, eepromlist, alarm, wifi, password } = this.state;
+    const { isService } = this.context;
+
+    const displayAlarm = isService ? alarm : (alarm ? t('generic_alarm') : "");
 
     if (!isDataAvailable) {
       return (
@@ -78,16 +96,26 @@ class Configurator extends Component {
                 <InfoText descr={t('serial')} value={eepromlist.SerialString} />
                 <InfoText descr={t('HW_vers')} value={eepromlist.HW_Vers} />
                 <InfoText descr={t('SW_vers')} value={eepromlist.SW_Vers} />
-                <InfoText descr={t('alarm_list')} value={alarm} textcolor="red" />
+                <InfoText descr={t('alarm_list')} value={displayAlarm} textcolor="red" />
                 <InfoText descr={t('wifi_ssid')} value={wifi} />
                 <InfoText descr={t('wifi_password')} value={password} />
               </>
             )}
           </View>
         </ScrollView>
+        <Pressable style={styles.disconnectButton} onPress={this.handleLogout}>
+            <Text style={styles.disconnectButtonText}>{t('logout')}</Text>
+          </Pressable>
       </SafeAreaView>
     );
   }
 }
+
+const localStyles = StyleSheet.create({
+  logoutButtonContainer: {
+    margin: 20,
+    alignItems: 'center',
+  },
+});
 
 export default withTranslation()(Configurator);

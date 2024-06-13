@@ -40,6 +40,8 @@
     "distance" : "Distanza",
     "meters" : "metri",
     "stay_logged_in": "mantienimi connesso",
-    "disconnect": "Disconnetti",
+    "disconnect": "Disconnetti l'unità",
+    "generic_alarm": "allarme generico",
+    "logout": "Logout"
   }
   

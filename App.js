@@ -3,17 +3,20 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Image, StyleSheet } from 'react-native';
-import InfoScreen from './src/screens/InfoScreen.js';
+import Home from './src/screens/Home.js'; 
 import BLEScreen from './src/screens/BLEScreen.js';
 import AdvEditing from './src/screens/AdvEditing.js';
 import SplashScreen from './src/screens/SplashScreen.js';
 import LoginScreen from './src/screens/LoginScreen.js';
 import Configurator from './src/screens/Configurator.js';
 import DeviceSelection from './src/screens/DeviceSelection.js';
+import InfoScreen from './src/screens/InfoScreen.js';
+import 'react-native-gesture-handler';
 import 'intl-pluralrules';
 import i18n from './i18n.js';
 import { I18nextProvider } from 'react-i18next';
 import { BluetoothProvider } from './src/context/BluetoothContext.js';
+import { ProfileProvider } from './src/context/ProfileContext.js';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -25,19 +28,19 @@ function MainTabs() {
         tabBarIcon: ({ focused }) => {
           let iconSource;
 
-          if (route.name === 'Configurator') {
+          if (route.name === 'Home') {
             iconSource = focused
               ? require('./src/assets/house.png')
               : require('./src/assets/house.png');
-          } else if (route.name === 'InfoScreen') {
+          } else if (route.name === 'Configurator') {
             iconSource = focused
               ? require('./src/assets/info-icon.png')
               : require('./src/assets/info-icon.png');
-          } else if (route.name === 'BLEScreen') {
+          } else if (route.name === 'AdvEditing') {
             iconSource = focused
               ? require('./src/assets/setting.png')
               : require('./src/assets/setting.png');
-          } else if (route.name === 'AdvEditing') {
+          } else if (route.name === 'InfoScreen') {
             iconSource = focused
               ? require('./src/assets/sliders-icon-original.png')
               : require('./src/assets/sliders-icon-original.png');
@@ -51,10 +54,10 @@ function MainTabs() {
         headerShown: false,
       })}
     >
-      <Tab.Screen name="Configurator" component={Configurator} />
+      <Tab.Screen name="Home" component={Home} /> 
       <Tab.Screen name="InfoScreen" component={InfoScreen} />
-      <Tab.Screen name="BLEScreen" component={BLEScreen} />
       <Tab.Screen name="AdvEditing" component={AdvEditing} />
+      <Tab.Screen name="Configurator" component={Configurator} />
     </Tab.Navigator>
   );
 }
@@ -68,6 +71,7 @@ const styles = StyleSheet.create({
 
 function App() {
   return (
+    <ProfileProvider>
     <BluetoothProvider>
       <I18nextProvider i18n={i18n}>
         <NavigationContainer>
@@ -96,6 +100,7 @@ function App() {
         </NavigationContainer>
       </I18nextProvider>
     </BluetoothProvider>
+    </ProfileProvider>
   );
 }
 
