@@ -187,7 +187,7 @@ const styles = StyleSheet.create({
   },
   BPButton: {
     backgroundColor: colors.lightblue, // Colore di sfondo blu
-    borderRadius: 4,
+    borderRadius: 8,
     paddingVertical: 14,
     paddingHorizontal: 20,
     marginTop: 20, // Spazio superiore
