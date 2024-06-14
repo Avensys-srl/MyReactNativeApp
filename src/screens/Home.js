@@ -1,6 +1,6 @@
 // src/screens/Home.js
 
-import React, { Component, useContext } from 'react';
+import React, { Component } from 'react';
 import {
   SafeAreaView,
   Text,
@@ -41,7 +41,7 @@ class Home extends Component {
     this.updateInterval = setInterval(() => {
       const alarm = pollingData.getAlarmString();
       this.setState({
-        isWarningActive: alarm !== 0,
+        isWarningActive: alarm !== "",
         alarm: alarm,
         selectedButton: eepromData.sel_idxStepMotors + 1,
         boost: eepromData.isBoostEnabled(),
