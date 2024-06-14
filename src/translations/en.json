@@ -42,7 +42,7 @@
     "stay_logged_in": "keep me logged",
     "disconnect": "Disconnect Unit",
     "generic_alarm": "generic alarm",
-    "logout": "Logout"
-    "username": "Username"
+    "logout": "Logout",
+    "profile": "Profile"
   }
   
