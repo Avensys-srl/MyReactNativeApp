@@ -110,12 +110,4 @@ class Configurator extends Component {
     );
   }
 }
-
-const localStyles = StyleSheet.create({
-  logoutButtonContainer: {
-    margin: 20,
-    alignItems: 'center',
-  },
-});
-
 export default withTranslation()(Configurator);

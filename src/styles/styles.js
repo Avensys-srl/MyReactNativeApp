@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     backgroundColor: colors.lightblue,
     margin: 10,
-    borderRadius: 12,
+    borderRadius: 8,
     ...boxShadow,
   },
   BPButton: {
@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     backgroundColor: '#0a398a',
     margin: 10,
-    borderRadius: 12,
+    borderRadius: 8,
     flex: 1,
     ...boxShadow,
   },
@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: 16,
     margin: 10,
-    borderRadius: 12,
+    borderRadius: 8,
     ...boxShadow,
   },
   disconnectButtonText: {
