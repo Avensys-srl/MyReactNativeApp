@@ -10,6 +10,7 @@ import {
   convertUint8ArrayToByteArray,
   readWifiSSID,
   readWifiPassword,
+  stringToUint8Array
 } from '../function/Parsing.js';
 import { eepromData, WifiData } from '../function/Data.js';
 
@@ -216,20 +217,43 @@ class BLEReader extends Component {
                 console.error('Error reading characteristic:', error);
               }
             } else if (characteristic.characteristic === 'ff05') {
-              try {
-                let data = await BleManager.read(this.connectedDevice, characteristic.service, characteristic.characteristic);
-                readWifiSSID(data);
-                //console.debug('WiFiSSID read: ',  data);
-              } catch (error) {
-                console.error('Error reading characteristic:', error);
+              if (WifiData.WifiValueChanged) {
+                try {
+                  const data = stringToUint8Array(WifiData.WifiSSID);
+                  const buffer = convertUint8ArrayToByteArray(data);
+                  await BleManager.write(this.connectedDevice, characteristic.service, characteristic.characteristic, buffer, data.length);
+                  console.debug('WiFi SSID written:', data);
+                } catch (error) {
+                  console.error('Error writing WiFi SSID:', error);
+                }
+              } else {
+                try {
+                  let data = await BleManager.read(this.connectedDevice, characteristic.service, characteristic.characteristic);
+                  readWifiSSID(data);
+                  console.debug('WiFiSSID read:', data);
+                } catch (error) {
+                  console.error('Error reading WiFi SSID:', error);
+                }
               }
             } else if (characteristic.characteristic === 'ff06') {
-              try {
-                let data = await BleManager.read(this.connectedDevice, characteristic.service, characteristic.characteristic);
-                readWifiPassword(data);
-                //console.debug('WiFiPSWD read: ', data);
-              } catch (error) {
-                console.error('Error reading characteristic:', error);
+              if (WifiData.WifiValueChanged) {
+                try {
+                  const data = stringToUint8Array(WifiData.WifiPSWD);
+                  const buffer = convertUint8ArrayToByteArray(data);
+                  await BleManager.write(this.connectedDevice, characteristic.service, characteristic.characteristic, buffer, data.length);
+                  console.debug('WiFi Password written:', data);
+                  WifiData.WifiValueChanged = false;
+                } catch (error) {
+                  console.error('Error writing WiFi Password:', error);
+                }
+              } else {
+                try {
+                  let data = await BleManager.read(this.connectedDevice, characteristic.service, characteristic.characteristic);
+                  readWifiPassword(data);
+                  console.debug('WiFiPSWD read:', data);
+                } catch (error) {
+                  console.error('Error reading WiFi Password:', error);
+                }
               }
             }
           }

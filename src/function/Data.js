@@ -277,6 +277,7 @@ class WIFI_TAG
   constructor() {
     this.WifiSSID = 0;
     this.WifiPSWD = 0;
+    this.WifiValueChanged = false;
   } 
 }
 

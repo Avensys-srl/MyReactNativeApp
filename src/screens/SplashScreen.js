@@ -1,8 +1,8 @@
 // src/screens/SplashScreen.js
-import React, {useEffect} from 'react';
-import {View, Image, Text, StyleSheet, SafeAreaView} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
-import colors from '../styles/colors'; 
+import React, { useEffect } from 'react';
+import { View, Image, StyleSheet, SafeAreaView } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import colors from '../styles/colors';
 
 const SplashScreen = () => {
   const navigation = useNavigation();
@@ -43,13 +43,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: colors.black,
-  },
   image: {
     width: '80%',  // Image width set to 80% of the container's width
+    maxWidth: 1000, // Image width should not exceed 1000 pixels
     height: undefined, // Maintain aspect ratio
     aspectRatio: 1, // Assuming the image is square. Adjust as needed.
     resizeMode: 'contain',

@@ -32,6 +32,13 @@ export function convertUint8ArrayToByteArray(uint8Array) {
   return byteArray;
 }
 
+export function stringToUint8Array(str) {
+  const arr = new Uint8Array(str.length);
+  for (let i = 0; i < str.length; i++) {
+    arr[i] = str.charCodeAt(i);
+  }
+  return arr;
+}
 function uint8ArrayToString(uint8Array){
   let str = '';
   for (let i = 0; i < uint8Array.length; i++) {

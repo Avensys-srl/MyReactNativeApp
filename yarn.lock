@@ -6096,6 +6096,11 @@ react-native-bouncy-checkbox@^4.0.1:
   dependencies:
     "@freakycoder/react-native-bounceable" "^1.0.3"
 
+react-native-dropdown-picker@^5.4.6:
+  version "5.4.6"
+  resolved "https://registry.npmjs.org/react-native-dropdown-picker/-/react-native-dropdown-picker-5.4.6.tgz"
+  integrity sha512-T1XBHbE++M6aRU3wFYw3MvcOuabhWZ29RK/Ivdls2r1ZkZ62iEBZknLUPeVLMX3x6iUxj4Zgr3X2DGlEGXeHsA==
+
 react-native-fs@^2.20.0:
   version "2.20.0"
   resolved "https://registry.npmjs.org/react-native-fs/-/react-native-fs-2.20.0.tgz"
@@ -6186,7 +6191,12 @@ react-native-webview@^13.6.2:
     escape-string-regexp "2.0.0"
     invariant "2.2.4"
 
-react-native@*, "react-native@^0.0.0-0 || >=0.60 <1.0", react-native@^0.72.14, "react-native@>= 0.62", react-native@>=0.60.0, react-native@>=0.63.4, react-native@>=0.70.0:
+react-native-wifi-reborn@^4.12.1:
+  version "4.12.1"
+  resolved "https://registry.npmjs.org/react-native-wifi-reborn/-/react-native-wifi-reborn-4.12.1.tgz"
+  integrity sha512-HZvXJepGZu75GqtYD1qfYxW1PlV9LeTtSWt81IcAOAyn0qfyJO0ayym2AiJwd297jRF704q6jYvkeW19RfE+8w==
+
+react-native@*, "react-native@^0.0.0-0 || >=0.60 <1.0", react-native@^0.72.14, "react-native@>= 0.62", react-native@>=0.13, react-native@>=0.60.0, react-native@>=0.63.4, react-native@>=0.70.0:
   version "0.72.14"
   resolved "https://registry.npmjs.org/react-native/-/react-native-0.72.14.tgz"
   integrity sha512-7L0ync/mSyyUPL09lXYFiseibKwhXs4dWVm8olWfFAKqe8xjwsGD4CWXCUEydhHI906FIhJKMjIK59wb98zAug==

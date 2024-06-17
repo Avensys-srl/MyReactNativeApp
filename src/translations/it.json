@@ -43,6 +43,7 @@
     "disconnect": "Disconnetti l'unità",
     "generic_alarm": "allarme generico",
     "logout": "Logout",
-    "profile": "Profilo"
+    "profile": "Profilo",
+    "no_alarm": "Nessun allarme"
   }
   

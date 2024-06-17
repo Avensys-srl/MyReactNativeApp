@@ -14,7 +14,6 @@ import { eepromData, pollingData, WifiData } from '../function/Data.js';
 import { InfoText } from '../icons/Controls.js';
 import { withTranslation } from 'react-i18next';
 import { ProfileContext } from '../context/ProfileContext';
-import colors from '../styles/colors.js';
 import { BluetoothContext } from '../context/BluetoothContext';
 
 const Configurator = ({ navigation, t }) => {
@@ -68,7 +67,8 @@ const Configurator = ({ navigation, t }) => {
     navigation.replace('LoginScreen');
   };
 
-  const displayAlarm = isService ? alarm : (alarm ? t('generic_alarm') : "");
+  const displayAlarm = isService ? (alarm ? alarm : t('no_alarm')) : (alarm ? t('generic_alarm') : t('no_alarm'));
+  const alarmColor = (alarm ? "red" : "gray");
 
   if (!isDataAvailable) {
     return (
@@ -98,7 +98,7 @@ const Configurator = ({ navigation, t }) => {
               <InfoText descr={t('serial')} value={eepromlist.SerialString} />
               <InfoText descr={t('HW_vers')} value={eepromlist.HW_Vers} />
               <InfoText descr={t('SW_vers')} value={eepromlist.SW_Vers} />
-              <InfoText descr={t('alarm_list')} value={displayAlarm} textcolor="red" />
+              <InfoText descr={t('alarm_list')} value={displayAlarm} textcolor={alarmColor} />
               <InfoText descr={t('wifi_ssid')} value={wifi} />
               <InfoText descr={t('wifi_password')} value={password} />
               <InfoText descr={t('profile')} value={username} />
