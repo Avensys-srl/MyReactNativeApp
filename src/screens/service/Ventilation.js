@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, ScrollView, Text, Dimensions } from 'react-native';
+import { StyleSheet, View, ScrollView, Text, Dimensions, TouchableOpacity } from 'react-native';
 import AvenVerticalBar from '../../component/AvenVerticalBar';
 import colors from '../../styles/colors';
 import { useTranslation } from 'react-i18next';
@@ -62,6 +62,9 @@ const Ventilation = () => {
           <AvenVerticalBar TS="2" VS={verticalBarValues[2]} Visible={true} Probes={0} onValueChange={handleValueChange} minValue={verticalBarValues[1]} />
           <AvenVerticalBar TS="3" VS={verticalBarValues[3]} Visible={true} Probes={0} onValueChange={handleValueChange} minValue={verticalBarValues[2]} maxValue={100} />
         </View>
+        <TouchableOpacity style={styles.button} onPress={handleSave}>
+            <Text style={styles.buttonText}>{t('save')}</Text>
+          </TouchableOpacity>
       </ScrollView>
     </View>
   );
