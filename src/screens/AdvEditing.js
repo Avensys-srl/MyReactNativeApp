@@ -3,7 +3,7 @@ import React, {Component} from 'react';
 import {View, Text, SafeAreaView, ScrollView, Pressable} from 'react-native';
 import styles from '../styles/styles.js';
 import {eepromData} from '../function/Data.js';
-import {InfoText, EditableInfoRow} from '../icons/Controls.js';
+import CustomSlider from '../icons/CustomSlider.js';
 
 class AdvEditing extends Component {
   constructor(props) {
@@ -50,8 +50,9 @@ class AdvEditing extends Component {
     clearInterval(this.updateInterval);
   }
 
-  navigateToScreen = () => {
-    this.props.navigation.navigate('BLEScreen');
+  handleValueChange = (key, value) => {
+    this.setState({ [key]: value });
+    eepromData.setValueByKey(key, Number(value));
   };
 
   render() {
@@ -60,9 +61,6 @@ class AdvEditing extends Component {
     return (
       <SafeAreaView style={styles.body}>
         <ScrollView>
-          <Pressable style={styles.scanButton} onPress={this.navigateToScreen}>
-            <Text style={styles.scanButtonText}>{'Back to home'}</Text>
-          </Pressable>
           {!isDataLoaded ? (
             <View>
               <Text style={styles.sectionDescription}>
@@ -71,40 +69,61 @@ class AdvEditing extends Component {
             </View>
           ) : (
             <View>
-              <EditableInfoRow
-                label="numPulseMotors"
-                initialValue={String(this.state.numPulseMotors)}
-                onSubmitEditing={(newValue) => eepromData.setValueByKey('numPulseMotors', Number(newValue))}
+              <CustomSlider
+                title="Set Imbalance 1"
+                minValue={0}
+                maxValue={100}
+                initialValue={this.state.Set_Imbalance1}
+                showToggle={false}
+                onValueChange={(value) => this.handleValueChange('Set_Imbalance1', value)}
               />
-              <EditableInfoRow
-                label="depotMotors"
-                initialValue={String(this.state.depotMotors)}
-                onSubmitEditing={(newValue) => eepromData.setValueByKey('depotMotors', Number(newValue))}
+              <CustomSlider
+                title="Number of Pulse Motors"
+                minValue={0}
+                maxValue={100}
+                initialValue={this.state.numPulseMotors}
+                showToggle={false}
+                onValueChange={(value) => this.handleValueChange('numPulseMotors', value)}
               />
-              <EditableInfoRow
-                label="SetPoint_RH"
-                initialValue={String(this.state.SetPoint_RH)}
-                onSubmitEditing={(newValue) => eepromData.setValueByKey('SetPoint_RH', Number(newValue))}
+              <CustomSlider
+                title="Depot Motors"
+                minValue={0}
+                maxValue={100}
+                initialValue={this.state.depotMotors}
+                showToggle={false}
+                onValueChange={(value) => this.handleValueChange('depotMotors', value)}
               />
-              <EditableInfoRow
-                label="SetPoint_CO2"
-                initialValue={String(this.state.SetPoint_CO2)}
-                onSubmitEditing={(newValue) => eepromData.setValueByKey('SetPoint_CO2', Number(newValue))}
+              <CustomSlider
+                title="Set Point CO2"
+                minValue={0}
+                maxValue={100}
+                initialValue={this.state.SetPoint_CO2}
+                showToggle={false}
+                onValueChange={(value) => this.handleValueChange('SetPoint_CO2', value)}
               />
-              <EditableInfoRow
-                label="SetPoint_VOC"
-                initialValue={String(this.state.SetPoint_VOC)}
-                onSubmitEditing={(newValue) => eepromData.setValueByKey('SetPoint_VOC', Number(newValue))}
+              <CustomSlider
+                title="Set Point RH"
+                minValue={0}
+                maxValue={100}
+                initialValue={this.state.SetPoint_RH}
+                showToggle={false}
+                onValueChange={(value) => this.handleValueChange('SetPoint_RH', value)}
               />
-              <EditableInfoRow
-                label="Set_Imbalance1"
-                initialValue={String(this.state.Set_Imbalance1)}
-                onSubmitEditing={(newValue) => eepromData.setValueByKey('Set_Imbalance1', Number(newValue))}
+              <CustomSlider
+                title="Set Point VOC"
+                minValue={0}
+                maxValue={100}
+                initialValue={this.state.SetPoint_VOC}
+                showToggle={false}
+                onValueChange={(value) => this.handleValueChange('SetPoint_VOC', value)}
               />
-              <EditableInfoRow
-                label="SetPoint_Airflow_CO2"
-                initialValue={String(this.state.SetPoint_Airflow_CO2)}
-                onSubmitEditing={(newValue) => eepromData.setValueByKey('SetPoint_Airflow_CO2', Number(newValue))}
+              <CustomSlider
+                title="Set Point Airflow CO2"
+                minValue={0}
+                maxValue={100}
+                initialValue={this.state.SetPoint_Airflow_CO2}
+                showToggle={false}
+                onValueChange={(value) => this.handleValueChange('SetPoint_Airflow_CO2', value)}
               />
             </View>
           )}

@@ -193,6 +193,31 @@ const styles = StyleSheet.create({
     letterSpacing: 0.25,
     color: colors.white,
   },
+  header: {
+    width: '100%',
+    alignItems: 'flex-start',
+    marginBottom: 20,
+  },
+  title: {
+    fontSize: 24,
+    marginLeft: 16,
+  },
+  line: {
+    height: 1,
+    width: '100%',
+    backgroundColor: colors.gray,
+    marginTop: 4,
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    alignItems: 'center',
+    padding: 16,
+  },
+  container: {
+    flex: 1,
+    backgroundColor: colors.white,
+    padding: 16,
+  },
 });
 
 export default styles;

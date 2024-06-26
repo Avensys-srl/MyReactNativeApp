@@ -40,14 +40,16 @@ const Ventilation = () => {
         newValues[3] = Math.min(value, 100);
       }
 
-      // Update eepromData
-      eepromData.Set_StepMotorsFSC_CAF1 = newValues[1] * 10;
-      eepromData.Set_StepMotorsFSC_CAF2 = newValues[2] * 10;
-      eepromData.Set_StepMotorsFSC_CAF3 = newValues[3] * 10;
-      eepromData.ValueChange = 1;
-
       return newValues;
     });
+  };
+
+  const handleSave = () => {
+    // Update eepromData
+    eepromData.Set_StepMotorsFSC_CAF1 = verticalBarValues[1] * 10;
+    eepromData.Set_StepMotorsFSC_CAF2 = verticalBarValues[2] * 10;
+    eepromData.Set_StepMotorsFSC_CAF3 = verticalBarValues[3] * 10;
+    eepromData.ValueChange = 1;
   };
 
   return (
@@ -63,8 +65,8 @@ const Ventilation = () => {
           <AvenVerticalBar TS="3" VS={verticalBarValues[3]} Visible={true} Probes={0} onValueChange={handleValueChange} minValue={verticalBarValues[2]} maxValue={100} />
         </View>
         <TouchableOpacity style={styles.button} onPress={handleSave}>
-            <Text style={styles.buttonText}>{t('save')}</Text>
-          </TouchableOpacity>
+          <Text style={styles.buttonText}>{t('save')}</Text>
+        </TouchableOpacity>
       </ScrollView>
     </View>
   );
@@ -89,6 +91,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     width: contentWidth,
+    marginBottom: 20,
   },
   header: {
     width: '100%',
@@ -104,6 +107,17 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: colors.gray,
     marginTop: 4,
+  },
+  button: {
+    backgroundColor: colors.lightblue,
+    paddingVertical: 12,
+    borderRadius: 4,
+    alignItems: 'center',
+    width: '100%',
+  },
+  buttonText: {
+    color: colors.white,
+    fontSize: 18,
   },
 });
 

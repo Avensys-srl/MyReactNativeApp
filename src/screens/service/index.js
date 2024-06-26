@@ -4,8 +4,8 @@ import Ventilation from './Ventilation';
 import LayoutUnit from './LayoutUnit';
 import { ProfileContext } from '../../context/ProfileContext';
 import InfoScreen from '../InfoScreen';
-import BLEScreen from '../BLEScreen';
-import AdvEditing from '../AdvEditing';
+import DataMonitor from './DataMonitor';
+import Editing from './Editing';
 
 const ServiceRoutes = () => {
   const { isService } = useContext(ProfileContext);
@@ -15,10 +15,10 @@ const ServiceRoutes = () => {
   const allRoutes = [
     { name: 'Ventilation', component: Ventilation, labelKey: 'Ventilation', forService: false },
     { name: 'LayoutUnit', component: LayoutUnit, labelKey: 'LayoutUnit', forService: true },
-    { name: 'Timers', component: Ventilation, labelKey: 'Filter_Setting', forService: true },
-    { name: 'AllData', component: InfoScreen, labelKey: 'All_data', forService: true },
-    { name: 'LiveControl', component: BLEScreen, labelKey: 'Test_unit', forService: true },
-    { name: 'AdvEditing', component: AdvEditing, labelKey: 'Test_Edit', forService: true },
+    { name: 'AdvEditing', component: Editing, labelKey: 'Editing', forService: true },
+    //{ name: 'AllData', component: InfoScreen, labelKey: 'All_data', forService: true },
+    { name: 'LiveControl', component: DataMonitor, labelKey: 'Data_Monitor', forService: true },
+    
   ];
 
   const filteredRoutes = isService ? allRoutes : allRoutes.filter(route => !route.forService);

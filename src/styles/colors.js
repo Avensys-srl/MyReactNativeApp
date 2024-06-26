@@ -2,7 +2,7 @@ const colors = {
     black: '#000000',
     white: '#FFFFFF',
     red: '#FF0000',
-    green: '#00FF00',
+    green: '#00BB00',
     blue: '#0000FF',
     yellow: '#FFFF00',
     cyan: '#00FFFF',
@@ -19,6 +19,7 @@ const colors = {
     aqua: '#00FFFF',
     fuchsia: '#FF00FF',
     lightblue: '#0a398a',
+    thumbColor: '#D3D3D3',
     // Add more colors as needed
   };
   

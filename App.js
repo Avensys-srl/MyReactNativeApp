@@ -28,12 +28,8 @@ function createResetStackNavigator(StackComponent, initialRouteName) {
   return function ResetStackNavigator({ navigation }) {
     React.useEffect(() => {
       const unsubscribe = navigation.addListener('tabPress', e => {
-        navigation.dispatch(
-          CommonActions.reset({
-            index: 0,
-            routes: [{ name: initialRouteName }],
-          })
-        );
+        e.preventDefault(); // Prevent default behavior
+        navigation.navigate(initialRouteName);
       });
 
       return unsubscribe;
@@ -112,7 +108,7 @@ function MainTabs() {
         headerShown: false,
       })}
     >
-      <Tab.Screen name="Home" component={Home} /> 
+      <Tab.Screen name="Home" component={Home} />
       <Tab.Screen name="SettingList" component={ResetSettingsStack} />
       <Tab.Screen name="ServiceList" component={ResetServiceStack} />
       <Tab.Screen name="Configurator" component={Configurator} />

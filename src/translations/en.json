@@ -68,5 +68,16 @@
     "left_configuration": "Left configuration",
     "right_configuration": "Right configuration",
     "green_arrow": "Green arrow : outdoor air",
+    "save" : "Save",
+    "Data_Monitor" : "Data Monitor",
+    "set_imbalance": "Set Imbalance",
+    "num_pulse_motors": "Number of Pulse Motors",
+    "depot_motors": "Depot Motors",
+    "set_point_co2": "Set Point CO2",
+    "set_point_rh": "Set Point RH",
+    "set_point_voc": "Set Point VOC",
+    "set_point_airflow_co2": "Set Point Airflow CO2",
+    "filter_timer": "Filter timer",
+    "Editing" : "Editing"
   }
   
