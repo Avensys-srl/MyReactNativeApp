@@ -8,7 +8,6 @@ import {
   Pressable,
   Image
 } from 'react-native';
-
 import styles from '../styles/styles.js';
 import BLEReader from './BLEReader.js';
 import { withTranslation } from 'react-i18next';
@@ -20,11 +19,18 @@ class DeviceSelection extends Component {
     this.state = {
       devices: [],
       scanning: null,
-      connected: false, // Add connected state
+      connected: false,
     };
 
     this.bluetooth = new BLEReader({ onDeviceFound: this.handleDeviceFound });
+  }
+
+  componentDidMount() {
     this.bluetooth.componentDidMount();
+  }
+
+  componentWillUnmount() {
+    this.bluetooth.componentWillUnmount();
   }
 
   handleDeviceFound = (devices) => {
@@ -34,7 +40,7 @@ class DeviceSelection extends Component {
 
   handleDeviceSelect = (device) => {
     this.bluetooth.connectToDevice(device.id).then(() => {
-      this.setState({ connected: true }); // Update connected state
+      this.setState({ connected: true });
       const { setDevice } = this.context;
       setDevice(device);
       this.props.navigation.navigate('MainTabs');
@@ -42,14 +48,15 @@ class DeviceSelection extends Component {
   };
 
   handleDisconnect = () => {
-    const { disconnect } = this.context;
-    disconnect().then(() => {
-      this.setState({ connected: false }); // Update connected state
+    this.bluetooth.disconnectDevice().then(() => {
+      this.setState({ connected: false });
+      const { setDevice } = this.context;
+      setDevice(null);
     });
   };
 
   startScan = () => {
-    this.setState({ devices: [], scanning: true }); // Reset devices state
+    this.setState({ devices: [], scanning: true });
     this.bluetooth.startScan().then(() => {
       this.setState({ scanning: false });
     }).catch(() => {
@@ -83,7 +90,7 @@ class DeviceSelection extends Component {
     const { t } = this.props;
     const averageRssi = this.calculateAverageRssi(item.rssiValues);
     const distance = this.calculateDistance(averageRssi);
-  
+
     return (
       <TouchableOpacity
         style={styles.deviceItem}

@@ -1,10 +1,9 @@
-// src/screens/settings/ChangeWiFi.js
 import React, { useState, useEffect } from 'react';
-import { SafeAreaView, View, Text, TextInput, TouchableOpacity, StyleSheet, Dimensions, Image } from 'react-native';
+import { SafeAreaView, View, Text, TextInput, TouchableOpacity, StyleSheet, Dimensions, Image, PermissionsAndroid, Platform, Alert } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import colors from '../../styles/colors';
 import DropDownPicker from 'react-native-dropdown-picker';
-import WifiManager from 'react-native-wifi-reborn'; // Assicurati di installare la libreria
+import WifiManager from 'react-native-wifi-reborn';
 import { WifiData } from '../../function/Data.js';
 
 const ChangeWiFi = () => {
@@ -16,8 +15,34 @@ const ChangeWiFi = () => {
   const [items, setItems] = useState([]);
 
   useEffect(() => {
-    scanForWiFiNetworks();
+    requestLocationPermission();
   }, []);
+
+  const requestLocationPermission = async () => {
+    if (Platform.OS === 'android') {
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+          {
+            title: 'Location Permission',
+            message: 'This app needs access to your location to scan for WiFi networks.',
+            buttonNeutral: 'Ask Me Later',
+            buttonNegative: 'Cancel',
+            buttonPositive: 'OK',
+          }
+        );
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          scanForWiFiNetworks();
+        } else {
+          console.log('Location permission denied');
+        }
+      } catch (err) {
+        console.warn(err);
+      }
+    } else {
+      scanForWiFiNetworks();
+    }
+  };
 
   const scanForWiFiNetworks = () => {
     WifiManager.loadWifiList()
@@ -35,7 +60,11 @@ const ChangeWiFi = () => {
   };
 
   const handleSave = () => {
-    // Logica per salvare le credenziali WiFi
+    if (!ssid || !password) {
+      Alert.alert(t('error'), t('Please fill in all fields'));
+      return;
+    }
+
     WifiData.WifiSSID = ssid;
     WifiData.WifiPSWD = password;
     WifiData.WifiValueChanged = true;

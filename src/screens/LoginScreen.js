@@ -38,28 +38,43 @@ const LoginScreen = () => {
   }, []);
 
   const checkLoginStatus = async () => {
-    const userCredentials = await AsyncStorage.getItem('userCredentials');
-    const stayLoggedInFlag = await AsyncStorage.getItem('stayLoggedIn');
-    if (userCredentials && stayLoggedInFlag === 'true') {
-      navigation.replace('DeviceSelection');
+    try {
+      const userCredentialsString = await AsyncStorage.getItem('userCredentials');
+      const stayLoggedInFlag = await AsyncStorage.getItem('stayLoggedIn');
+      if (userCredentialsString && stayLoggedInFlag === 'true') {
+        const userCredentials = JSON.parse(userCredentialsString);
+        if (userCredentials.username === 'Service' && userCredentials.password === '02015') {
+          setIsService(true);
+        } else {
+          setIsService(false);
+        }
+        navigation.replace('DeviceSelection');
+      }
+    } catch (error) {
+      console.error('Error checking login status:', error);
     }
   };
 
   const handleLogin = async () => {
-    if (username === 'User' && password === '12345') {
-      setIsService(false);
-      await AsyncStorage.setItem('userCredentials', JSON.stringify({ username, password }));
-      await AsyncStorage.setItem('userLanguage', language);
-      await AsyncStorage.setItem('stayLoggedIn', stayLoggedIn.toString());
-      navigation.replace('DeviceSelection');
-    } else if (username === 'Service' && password === '02015') {
-      setIsService(true);
-      await AsyncStorage.setItem('userCredentials', JSON.stringify({ username, password }));
-      await AsyncStorage.setItem('userLanguage', language);
-      await AsyncStorage.setItem('stayLoggedIn', stayLoggedIn.toString());
-      navigation.replace('DeviceSelection');
-    } else {
-      Alert.alert(t('error'), t('Invalid username or password'));
+    try {
+      if (username === 'User' && password === '12345') {
+        setIsService(false);
+        await AsyncStorage.setItem('userCredentials', JSON.stringify({ username, password }));
+        await AsyncStorage.setItem('userLanguage', language);
+        await AsyncStorage.setItem('stayLoggedIn', stayLoggedIn.toString());
+        navigation.replace('DeviceSelection');
+      } else if (username === 'Service' && password === '02015') {
+        setIsService(true);
+        await AsyncStorage.setItem('userCredentials', JSON.stringify({ username, password }));
+        await AsyncStorage.setItem('userLanguage', language);
+        await AsyncStorage.setItem('stayLoggedIn', stayLoggedIn.toString());
+        navigation.replace('DeviceSelection');
+      } else {
+        Alert.alert(t('error'), t('Invalid username or password'));
+      }
+    } catch (error) {
+      console.error('Error during login:', error);
+      Alert.alert(t('error'), t('Something went wrong. Please try again.'));
     }
   };
 
@@ -108,15 +123,13 @@ const LoginScreen = () => {
             textStyle={{
               textDecorationLine: 'none',
             }}
-            onPress={setStayLoggedIn}
+            onPress={() => setStayLoggedIn(!stayLoggedIn)}
             isChecked={stayLoggedIn}
           />
         </View>
-       
         <TouchableOpacity onPress={handleLogin} style={styles.BPButton}>
           <Text style={styles.BPButtonText}>{t('login')}</Text>
         </TouchableOpacity>
-
         <Modal
           animationType="slide"
           transparent={true}

@@ -10,6 +10,8 @@ import AdvEditing from '../AdvEditing';
 const ServiceRoutes = () => {
   const { isService } = useContext(ProfileContext);
 
+  console.log(isService);
+
   const allRoutes = [
     { name: 'Ventilation', component: Ventilation, labelKey: 'Ventilation', forService: false },
     { name: 'LayoutUnit', component: LayoutUnit, labelKey: 'LayoutUnit', forService: true },

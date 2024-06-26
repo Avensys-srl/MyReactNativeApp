@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, Button } from 'react-native';
+import { View, Text, Button, Alert } from 'react-native';
 import BleManager from 'react-native-ble-manager';
 import { NativeEventEmitter, NativeModules, Platform, PermissionsAndroid } from 'react-native';
 import {
@@ -32,7 +32,51 @@ class BLEReader extends Component {
   }
 
   componentDidMount() {
-    this.handleAndroidPermissions();
+    this.requestPermissions();
+  }
+
+  componentWillUnmount() {
+    this.handlerDiscover?.remove();
+    this.handlerStop?.remove();
+    this.handlerDisconnect?.remove();
+    this.handlerUpdate?.remove();
+    this.readQueue.forEach(timeoutId => clearTimeout(timeoutId));
+  }
+
+  requestPermissions = async () => {
+    if (Platform.OS === 'android') {
+      try {
+        let granted = {};
+        if (Platform.Version >= 31) {
+          granted = await PermissionsAndroid.requestMultiple([
+            PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN,
+            PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
+            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+            PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
+          ]);
+        } else if (Platform.Version >= 23) {
+          granted = await PermissionsAndroid.requestMultiple([
+            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+            PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
+          ]);
+        }
+
+        const allGranted = Object.values(granted).every(result => result === PermissionsAndroid.RESULTS.GRANTED);
+
+        if (!allGranted) {
+          Alert.alert('Permissions required', 'Bluetooth and Location permissions are required to use this app.');
+        } else {
+          this.initializeBleManager();
+        }
+      } catch (err) {
+        console.warn(err);
+      }
+    } else {
+      this.initializeBleManager();
+    }
+  };
+
+  initializeBleManager() {
     BleManager.start({ showAlert: false });
 
     this.handlerDiscover = bleManagerEmitter.addListener('BleManagerDiscoverPeripheral', this.handleDiscoverPeripheral);
@@ -42,42 +86,6 @@ class BLEReader extends Component {
 
     this.startScan();
   }
-
-  componentWillUnmount() {
-    this.handlerDiscover.remove();
-    this.handlerStop.remove();
-    this.handlerDisconnect.remove();
-    this.handlerUpdate.remove();
-  }
-
-  handleAndroidPermissions = () => {
-    if (Platform.OS === 'android' && Platform.Version >= 31) {
-      PermissionsAndroid.requestMultiple([
-        PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN,
-        PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
-      ]).then(result => {
-        if (result) {
-          console.debug('[handleAndroidPermissions] User accepts runtime permissions android 12+');
-        } else {
-          console.error('[handleAndroidPermissions] User refuses runtime permissions android 12+');
-        }
-      });
-    } else if (Platform.OS === 'android' && Platform.Version >= 23) {
-      PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION).then(checkResult => {
-        if (checkResult) {
-          console.debug('[handleAndroidPermissions] runtime permission Android <12 already OK');
-        } else {
-          PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION).then(requestResult => {
-            if (requestResult) {
-              console.debug('[handleAndroidPermissions] User accepts runtime permission android <12');
-            } else {
-              console.error('[handleAndroidPermissions] User refuses runtime permission android <12');
-            }
-          });
-        }
-      });
-    }
-  };
 
   startScan() {
     return new Promise((resolve, reject) => {
@@ -195,9 +203,12 @@ class BLEReader extends Component {
               } else {
                 try {
                   let data = await BleManager.read(this.connectedDevice, characteristic.service, characteristic.characteristic);
-                  parseUint8ArrayToEEPROM(data);
+                  if(!eepromData.hasValueChanged())
+                    {
+                      parseUint8ArrayToEEPROM(data);
+                    }
                   this.characteristicValue = data;
-                  console.debug('EEPROM read: ', data);
+                  //console.debug('EEPROM read: ', data);
                 } catch (error) {
                   console.error('Error reading characteristic:', error);
                 }
@@ -230,7 +241,7 @@ class BLEReader extends Component {
                 try {
                   let data = await BleManager.read(this.connectedDevice, characteristic.service, characteristic.characteristic);
                   readWifiSSID(data);
-                  console.debug('WiFiSSID read:', data);
+                  //console.debug('WiFiSSID read:', data);
                 } catch (error) {
                   console.error('Error reading WiFi SSID:', error);
                 }
@@ -250,7 +261,7 @@ class BLEReader extends Component {
                 try {
                   let data = await BleManager.read(this.connectedDevice, characteristic.service, characteristic.characteristic);
                   readWifiPassword(data);
-                  console.debug('WiFiPSWD read:', data);
+                  //console.debug('WiFiPSWD read:', data);
                 } catch (error) {
                   console.error('Error reading WiFi Password:', error);
                 }
@@ -288,10 +299,6 @@ class BLEReader extends Component {
         <Button title="Disconnetti" onPress={() => this.disconnectDevice()} />
       </View>
     );
-  }
-
-  componentWillUnmount() {
-    this.readQueue.forEach(timeoutId => clearTimeout(timeoutId));
   }
 }
 

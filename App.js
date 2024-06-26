@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, CommonActions } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Image, StyleSheet } from 'react-native';
@@ -24,9 +24,28 @@ import ServiceMenu from './src/screens/ServiceMenu.js';
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
+function createResetStackNavigator(StackComponent, initialRouteName) {
+  return function ResetStackNavigator({ navigation }) {
+    React.useEffect(() => {
+      const unsubscribe = navigation.addListener('tabPress', e => {
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [{ name: initialRouteName }],
+          })
+        );
+      });
+
+      return unsubscribe;
+    }, [navigation]);
+
+    return <StackComponent />;
+  };
+}
+
 function SettingsStack() {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator initialRouteName="SettingsMenu">
       <Stack.Screen
         name="SettingsMenu"
         component={SettingsMenu}
@@ -47,7 +66,7 @@ function SettingsStack() {
 function ServiceStack() {
   const routes = ServiceRoutes(); // Call the function to get routes
   return (
-    <Stack.Navigator>
+    <Stack.Navigator initialRouteName="ServiceMenu">
       <Stack.Screen
         name="ServiceMenu"
         component={ServiceMenu}
@@ -65,6 +84,9 @@ function ServiceStack() {
   );
 }
 
+const ResetSettingsStack = createResetStackNavigator(SettingsStack, 'SettingsMenu');
+const ResetServiceStack = createResetStackNavigator(ServiceStack, 'ServiceMenu');
+
 function MainTabs() {
   return (
     <Tab.Navigator
@@ -73,21 +95,13 @@ function MainTabs() {
           let iconSource;
 
           if (route.name === 'Home') {
-            iconSource = focused
-              ? require('./src/assets/house.png')
-              : require('./src/assets/house.png');
+            iconSource = require('./src/assets/house.png');
           } else if (route.name === 'Configurator') {
-            iconSource = focused
-              ? require('./src/assets/info-icon.png')
-              : require('./src/assets/info-icon.png');
-          } else if (route.name === 'AdvEditing') {
-            iconSource = focused
-              ? require('./src/assets/setting.png')
-              : require('./src/assets/setting.png');
-          } else if (route.name === 'Settings') {
-            iconSource = focused
-              ? require('./src/assets/sliders-icon-original.png')
-              : require('./src/assets/sliders-icon-original.png');
+            iconSource = require('./src/assets/info-icon.png');
+          } else if (route.name === 'ServiceList') {
+            iconSource = require('./src/assets/setting.png');
+          } else if (route.name === 'SettingList') {
+            iconSource = require('./src/assets/sliders-icon-original.png');
           }
 
           return <Image source={iconSource} style={styles.icon} />;
@@ -99,8 +113,8 @@ function MainTabs() {
       })}
     >
       <Tab.Screen name="Home" component={Home} /> 
-      <Tab.Screen name="Settings" component={SettingsStack} />
-      <Tab.Screen name="AdvEditing" component={ServiceStack} />
+      <Tab.Screen name="SettingList" component={ResetSettingsStack} />
+      <Tab.Screen name="ServiceList" component={ResetServiceStack} />
       <Tab.Screen name="Configurator" component={Configurator} />
     </Tab.Navigator>
   );
