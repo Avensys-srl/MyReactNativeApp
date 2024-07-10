@@ -1,11 +1,11 @@
 class SDAYPROG {
   constructor() {
-    this.numRange = 0; // 1 byte: numbers of ranges (from 0 = disable to 4)
-    this.timeON = [0, 0, 0, 0]; // 4 byte: timeON, Values from 0 to 48 (step di 30')
-    this.timeOFF = [0, 0, 0, 0]; // 4 byte: timeOFF, Values from 0 to 48 (step di 30')
-    this.ConfigSpeed = 0; // 1 byte: bit[7,6]:Step Speed range 4 | bit[5,4]:Step Speed range 3 | bit[3,2]:Step Speed range 2 | bit[1,0]:Step Speed range 1.
-    this.ConfigImbal = 0; // 1 byte: bit[7,6]:Set Imbal. range 4 | bit[5,4]:Set Imbal. range 3 | bit[3,2]:Set Imbal. range 2 | bit[1,0]:Set Imbal. range 1.
-    this.ConfigTemp = 0; // 1 byte: bit[7,6]:Rif. Temp. range 4 | bit[5,4]:Rif. Temp. range 3 | bit[3,2]:Rif. Temp. range 2 | bit[1,0]:Rif. Temp.range 1.
+    this.numRange = 0;
+    this.timeON = [0, 0, 0, 0];
+    this.timeOFF = [0, 0, 0, 0];
+    this.ConfigSpeed = 0;
+    this.ConfigImbal = 0;
+    this.ConfigTemp = 0;
   }
 }
 
@@ -99,7 +99,7 @@ class EEPROM_DATA_TAG {
     this.Set_EHD_mod = 0;
     this.Set_BPD_mod = 0;
     this.cntUpdate_SetTemp = 0;
-    this.sDayProg = 0;
+    this.sDayProg = new SDAYPROG();
     this.cntUpdate_dayProg = 0;
     this.none = 0;
     this.version_eeprom = 0;
@@ -110,25 +110,12 @@ class EEPROM_DATA_TAG {
   }
 
   serialize() {
-    // Serializza l'oggetto corrente in una stringa JSON
-    const {previousState, ...currentState} = this;
+    const { previousState, ...currentState } = this;
     return JSON.stringify(currentState);
   }
 
   hasValueChanged() {
-    // // Serializza l'oggetto corrente, escludendo la proprietà 'previousState'
-    // const {previousState, ...currentState} = this;
-    // const currentSerialized = JSON.stringify(currentState);
-
-    // // Confronta lo stato corrente con lo stato precedente
-        // return currentSerialized !== this.previousState;
-    if(this.ValueChange === 1)
-      {
-        return true;
-      }
-      else 
-        return false;
-
+    return this.ValueChange === 1;
   }
 
   updatePreviousState() {
@@ -145,17 +132,14 @@ class EEPROM_DATA_TAG {
   }
 
   isBoostEnabled() {
-    // Verifica se il bit in posizione 1 di Enab_Fuction1 è acceso
     return (this.Enab_Fuction1 & 2) !== 0;
   }
 
   toggleBoost() {
-    // Toggle dello stato del bit in posizione 1 di Enab_Fuction1
     this.Enab_Fuction1 ^= 2;
   }
 
   setValueByKey(key, value) {
-    // Imposta il valore della variabile corrispondente alla chiave specificata
     if (typeof this[key] !== 'undefined') {
       this[key] = value;
       this.ValueChange = 1;
@@ -165,12 +149,19 @@ class EEPROM_DATA_TAG {
   }
 
   getValueByKey(key) {
-    // Restituisce il valore della variabile corrispondente alla chiave specificata
     if (typeof this[key] !== 'undefined') {
       return this[key];
     } else {
       console.error(`La chiave "${key}" non esiste nella classe EEPROM_DATA_TAG.`);
       return undefined;
+    }
+  }
+
+  updateFromJSON(json) {
+    for (const key in json) {
+      if (json.hasOwnProperty(key) && this.hasOwnProperty(key)) {
+        this[key] = json[key];
+      }
     }
   }
 }
@@ -208,6 +199,14 @@ class DEBUG_DATA_TAG {
     this.MeasTempAirPerheater = 0;
     this.MeasTempAirCooler = 0;
     this.StatusDSC = 0;
+  }
+
+  updateFromJSON(json) {
+    for (const key in json) {
+      if (json.hasOwnProperty(key) && this.hasOwnProperty(key)) {
+        this[key] = json[key];
+      }
+    }
   }
 }
 
@@ -247,7 +246,14 @@ class POLLING_DATA_TAG {
     this.MeasAWP = 0;
   }
 
-  // Function to analyze alarms and return error codes
+  updateFromJSON(json) {
+    for (const key in json) {
+      if (json.hasOwnProperty(key) && this.hasOwnProperty(key)) {
+        this[key] = json[key];
+      }
+    }
+  }
+
   analyzeAlarms() {
     const alarmCodes = [];
 
@@ -269,16 +275,14 @@ class POLLING_DATA_TAG {
     const alarmCodes = this.analyzeAlarms();
     return alarmCodes.join(' ');
   }
-
 }
 
-class WIFI_TAG
-{
+class WIFI_TAG {
   constructor() {
     this.WifiSSID = 0;
     this.WifiPSWD = 0;
     this.WifiValueChanged = false;
-  } 
+  }
 }
 
 export const eepromData = new EEPROM_DATA_TAG();

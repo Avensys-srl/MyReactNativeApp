@@ -16,6 +16,7 @@ import i18n from './i18n.js';
 import { I18nextProvider } from 'react-i18next';
 import { BluetoothProvider } from './src/context/BluetoothContext.js';
 import { ProfileProvider } from './src/context/ProfileContext.js';
+import { WiFiProvider } from './src/context/WiFiContext.js';
 import SettingsMenu from './src/screens/SettingsMenu';
 import settingsRoutes from './src/screens/settings';
 import ServiceRoutes from './src/screens/service';
@@ -127,32 +128,34 @@ function App() {
   return (
     <ProfileProvider>
       <BluetoothProvider>
-        <I18nextProvider i18n={i18n}>
-          <NavigationContainer>
-            <Stack.Navigator initialRouteName="SplashScreen">
-              <Stack.Screen
-                name="SplashScreen"
-                component={SplashScreen}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="LoginScreen"
-                component={LoginScreen}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="DeviceSelection"
-                component={DeviceSelection}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="MainTabs"
-                component={MainTabs}
-                options={{ headerShown: false }}
-              />
-            </Stack.Navigator>
-          </NavigationContainer>
-        </I18nextProvider>
+        <WiFiProvider>
+          <I18nextProvider i18n={i18n}>
+            <NavigationContainer>
+              <Stack.Navigator initialRouteName="SplashScreen">
+                <Stack.Screen
+                  name="SplashScreen"
+                  component={SplashScreen}
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="LoginScreen"
+                  component={LoginScreen}
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="DeviceSelection"
+                  component={DeviceSelection}
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="MainTabs"
+                  component={MainTabs}
+                  options={{ headerShown: false }}
+                />
+              </Stack.Navigator>
+            </NavigationContainer>
+          </I18nextProvider>
+        </WiFiProvider>
       </BluetoothProvider>
     </ProfileProvider>
   );

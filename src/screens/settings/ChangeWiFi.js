@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { SafeAreaView, View, Text, TextInput, TouchableOpacity, StyleSheet, Dimensions, Image, PermissionsAndroid, Platform, Alert } from 'react-native';
+import React, { useState, useEffect, useContext } from 'react';
+import { SafeAreaView, View, Text, TextInput, TouchableOpacity, StyleSheet, Dimensions, Image, PermissionsAndroid, Platform, Alert, Switch } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import colors from '../../styles/colors';
 import DropDownPicker from 'react-native-dropdown-picker';
 import WifiManager from 'react-native-wifi-reborn';
-import { WifiData } from '../../function/Data.js';
+import { WifiData, eepromData } from '../../function/Data.js';
+import { WifiContext } from '../../context/WiFiContext';
 
 const ChangeWiFi = () => {
   const { t } = useTranslation();
@@ -13,6 +14,7 @@ const ChangeWiFi = () => {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(null);
   const [items, setItems] = useState([]);
+  const { isWiFi, setIsWiFi, serialString, setSerialString } = useContext(WifiContext);
 
   useEffect(() => {
     requestLocationPermission();
@@ -76,12 +78,28 @@ const ChangeWiFi = () => {
     setSsid(selectedValue);
   };
 
+  const handleWiFiSwitch = (value) => {
+    setIsWiFi(value);
+    if (value) {
+      setSerialString(eepromData.SerialString); // Salva il SerialString nel contesto solo se isWiFi è true
+      console.log('SerialString:', serialString);
+    }
+    console.log('isWiFi:', value);
+  };
+
   return (
     <SafeAreaView style={styles.body}>
       <View style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.title}>{t('ChangeWiFi')}</Text>
           <View style={styles.line} />
+        </View>
+        <View style={styles.switchContainer}>
+          <Text style={styles.switchLabel}>Passa al WiFi</Text>
+          <Switch
+            value={isWiFi}
+            onValueChange={handleWiFiSwitch}
+          />
         </View>
         <View style={styles.content}>
           <DropDownPicker
@@ -147,6 +165,16 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: colors.gray,
     marginTop: 4,
+  },
+  switchContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginVertical: 20,
+    width: '100%',
+  },
+  switchLabel: {
+    fontSize: 18,
   },
   content: {
     width: contentWidth,

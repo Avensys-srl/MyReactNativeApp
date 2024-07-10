@@ -9,7 +9,6 @@ import styles from '../../styles/styles.js';
 import { eepromData, pollingData, debugData, WifiData } from '../../function/Data.js';
 import { InfoText, EditableInfoRow } from '../../icons/Controls.js';
 import { withTranslation } from 'react-i18next';
-import CustomSlider from '../../icons/CustomSlider.js';
 
 class DataMonitor extends Component {
   constructor(props) {

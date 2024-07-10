@@ -67,5 +67,6 @@
   "left_unit_selected": "Unità sinistra selezionata",
   "left_configuration": "Configurazione sinistra",
   "right_configuration": "Configurazione destra",
-  "green_arrow": "Freccia verde: aria esterna"
+  "green_arrow": "Freccia verde: aria esterna",
+  "ToWiFi" : "Passa al WiFi"
 }

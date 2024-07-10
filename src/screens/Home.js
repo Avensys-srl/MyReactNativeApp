@@ -1,13 +1,11 @@
-// src/screens/Home.js
-
-import React, { Component } from 'react';
+import React, { Component, useContext } from 'react';
 import {
   SafeAreaView,
   Text,
   View,
   Image,
   StyleSheet,
-  TouchableOpacity
+  TouchableOpacity,
 } from 'react-native';
 import { eepromData, pollingData } from '../function/Data.js';
 import { convertEEPROMToUint8Array } from '../function/Parsing.js';
@@ -16,6 +14,7 @@ import { withTranslation } from 'react-i18next';
 import colors from '../styles/colors.js';
 import { InfoText } from '../icons/Controls.js';
 import { ProfileContext } from '../context/ProfileContext';
+import { WifiContext } from '../context/WiFiContext';
 
 class Home extends Component {
   constructor(props) {
@@ -27,15 +26,15 @@ class Home extends Component {
       isPreheaterActive: false,
       isHeaterActive: false,
       isFilterClogged: false,
-      selectedButton: null, // Stato per tracciare il bottone selezionato
+      selectedButton: null,
       index: null,
       boost: null,
       alarm: null,
-      showAlarmList: false, // Stato per gestire la visualizzazione della lista degli allarmi
+      showAlarmList: false,
     };
   }
 
-  static contextType = ProfileContext; // Aggiungi questo per accedere al contesto
+  static contextType = ProfileContext;
 
   componentDidMount() {
     this.updateInterval = setInterval(() => {
@@ -58,9 +57,12 @@ class Home extends Component {
     const value = num - 1;
     eepromData.sel_idxStepMotors = Number(value);
     console.debug('SPEED INDEX', value);
-    const newEEPROM = convertEEPROMToUint8Array(eepromData);
-    eepromData.ValueChange = 1;
-    console.debug(newEEPROM);
+
+    // Aggiornamento EEPROM data e chiamata API
+    const { wifiContext } = this.props;
+    const { updateEEPROMData } = wifiContext;
+    const updates = { sel_idxStepMotors: value };
+    updateEEPROMData(updates);
   }
 
   handleOtherButtonPress = (num) => {
@@ -211,7 +213,7 @@ const homeStyles = StyleSheet.create({
     alignItems: 'center',
     margin: 5,
     marginRight: 10,
-    position: 'relative', // Aggiunto per il posizionamento degli elementi interni
+    position: 'relative',
   },
   buttonText: {
     fontSize: 50,
@@ -226,7 +228,7 @@ const homeStyles = StyleSheet.create({
     height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-    position: 'relative', // Aggiunto per il posizionamento degli elementi interni
+    position: 'relative',
   },
   topLeftImage: {
     width: '42%',
@@ -245,7 +247,7 @@ const homeStyles = StyleSheet.create({
   diagonalLine: {
     position: 'absolute',
     width: 2,
-    height: '100%', // copre tutta la diagonale
+    height: '100%',
     backgroundColor: colors.white,
     transform: [{ rotate: '45deg' }],
   },
@@ -263,4 +265,9 @@ const homeStyles = StyleSheet.create({
   },
 });
 
-export default withTranslation()(Home);
+const HomeWithContext = (props) => {
+  const wifiContext = useContext(WifiContext);
+  return <Home {...props} wifiContext={wifiContext} />;
+};
+
+export default withTranslation()(HomeWithContext);

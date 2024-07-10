@@ -115,7 +115,9 @@ class BLEReader extends Component {
 
     peripheral.rssiValues = rssiList;
     this.peripherals.set(id, peripheral);
-    this.props.onDeviceFound(Array.from(this.peripherals.values()));
+    if (this.props.onDeviceFound) {
+      this.props.onDeviceFound(Array.from(this.peripherals.values()));
+    }
   };
 
   handleStopScan = () => {

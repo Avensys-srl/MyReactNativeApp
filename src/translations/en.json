@@ -78,6 +78,7 @@
     "set_point_voc": "Set Point VOC",
     "set_point_airflow_co2": "Set Point Airflow CO2",
     "filter_timer": "Filter timer",
-    "Editing" : "Editing"
+    "Editing" : "Editing",
+    "ToWiFi" : "Wifi Mode"
   }
   

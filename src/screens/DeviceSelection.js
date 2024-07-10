@@ -1,4 +1,4 @@
-import React, { Component, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
   SafeAreaView,
   FlatList,
@@ -12,66 +12,74 @@ import styles from '../styles/styles.js';
 import BLEReader from './BLEReader.js';
 import { withTranslation } from 'react-i18next';
 import { BluetoothContext } from '../context/BluetoothContext';
+import { WifiContext } from '../context/WiFiContext';
 
-class DeviceSelection extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      devices: [],
-      scanning: null,
-      connected: false,
-    };
+const DeviceSelection = (props) => {
+  const [devices, setDevices] = useState([]);
+  const [scanning, setScanning] = useState(null);
+  const [connected, setConnected] = useState(false);
 
-    this.bluetooth = new BLEReader({ onDeviceFound: this.handleDeviceFound });
-  }
+  const { t } = props;
+  const { setDevice } = useContext(BluetoothContext);
+  const { isWiFi, serialString } = useContext(WifiContext);
 
-  componentDidMount() {
-    this.bluetooth.componentDidMount();
-  }
-
-  componentWillUnmount() {
-    this.bluetooth.componentWillUnmount();
-  }
-
-  handleDeviceFound = (devices) => {
+  const handleDeviceFound = (devices) => {
     const filteredDevices = devices.filter(device => device.name && device.name.startsWith('AVENSYS'));
-    this.setState({ devices: filteredDevices });
+    setDevices(filteredDevices);
   };
 
-  handleDeviceSelect = (device) => {
-    this.bluetooth.connectToDevice(device.id).then(() => {
-      this.setState({ connected: true });
-      const { setDevice } = this.context;
+  const bluetooth = new BLEReader({ onDeviceFound: handleDeviceFound });
+
+  useEffect(() => {
+    bluetooth.componentDidMount();
+    checkWiFiStatus();
+    return () => {
+      bluetooth.componentWillUnmount();
+    };
+  }, []);
+
+  const checkWiFiStatus = () => {
+    if (isWiFi) {
+      props.navigation.navigate('MainTabs');
+    } else {
+      console.log('WiFi is not enabled');
+    }
+    console.log('Serial String:', serialString);
+  };
+
+  const handleDeviceSelect = (device) => {
+    bluetooth.connectToDevice(device.id).then(() => {
+      setConnected(true);
       setDevice(device);
-      this.props.navigation.navigate('MainTabs');
+      props.navigation.navigate('MainTabs');
     });
   };
 
-  handleDisconnect = () => {
-    this.bluetooth.disconnectDevice().then(() => {
-      this.setState({ connected: false });
-      const { setDevice } = this.context;
+  const handleDisconnect = () => {
+    bluetooth.disconnectDevice().then(() => {
+      setConnected(false);
       setDevice(null);
     });
   };
 
-  startScan = () => {
-    this.setState({ devices: [], scanning: true });
-    this.bluetooth.startScan().then(() => {
-      this.setState({ scanning: false });
+  const startScan = () => {
+    setDevices([]);
+    setScanning(true);
+    bluetooth.startScan().then(() => {
+      setScanning(false);
     }).catch(() => {
-      this.setState({ scanning: false });
+      setScanning(false);
     });
   };
 
-  calculateDistance(rssi, A = -67, n = 2) {
+  const calculateDistance = (rssi, A = -67, n = 2) => {
     if (rssi === 0) {
       return -1.0;
     }
     return Math.pow(10, (A - rssi) / (10 * n));
-  }
+  };
 
-  calculateAverageRssi(rssiValues) {
+  const calculateAverageRssi = (rssiValues) => {
     if (!rssiValues || rssiValues.length === 0) {
       return null;
     }
@@ -84,17 +92,16 @@ class DeviceSelection extends Component {
 
     const sum = sortedValues.reduce((acc, val) => acc + val, 0);
     return sum / sortedValues.length;
-  }
+  };
 
-  renderDeviceItem = ({ item }) => {
-    const { t } = this.props;
-    const averageRssi = this.calculateAverageRssi(item.rssiValues);
-    const distance = this.calculateDistance(averageRssi);
+  const renderDeviceItem = ({ item }) => {
+    const averageRssi = calculateAverageRssi(item.rssiValues);
+    const distance = calculateDistance(averageRssi);
 
     return (
       <TouchableOpacity
         style={styles.deviceItem}
-        onPress={() => this.handleDeviceSelect(item)}
+        onPress={() => handleDeviceSelect(item)}
       >
         <View style={styles.deviceItemContent}>
           <View style={styles.deviceTextContainer}>
@@ -108,33 +115,26 @@ class DeviceSelection extends Component {
     );
   };
 
-  render() {
-    const { t } = this.props;
-    const { devices, scanning, connected } = this.state;
-
-    return (
-      <SafeAreaView style={styles.body}>
-        <View style={styles.sectionTitle}>
-          <Text style={styles.TitleText}>{t('choose_unit')}</Text>
-        </View>
-        <FlatList
-          data={devices}
-          renderItem={this.renderDeviceItem}
-          keyExtractor={item => item.id}
-        />
-        <Pressable style={styles.scanButton} onPress={() => scanning ? null : this.startScan()} disabled={scanning}>
-          <Text style={styles.scanButtonText}>{scanning ? t('scanning') : t('start_scan')}</Text>
+  return (
+    <SafeAreaView style={styles.body}>
+      <View style={styles.sectionTitle}>
+        <Text style={styles.TitleText}>{t('choose_unit')}</Text>
+      </View>
+      <FlatList
+        data={devices}
+        renderItem={renderDeviceItem}
+        keyExtractor={item => item.id}
+      />
+      <Pressable style={styles.scanButton} onPress={() => scanning ? null : startScan()} disabled={scanning}>
+        <Text style={styles.scanButtonText}>{scanning ? t('scanning') : t('start_scan')}</Text>
+      </Pressable>
+      {connected && (
+        <Pressable style={styles.disconnectButton} onPress={handleDisconnect}>
+          <Text style={styles.disconnectButtonText}>{t('disconnect')}</Text>
         </Pressable>
-        {connected && (
-          <Pressable style={styles.disconnectButton} onPress={this.handleDisconnect}>
-            <Text style={styles.disconnectButtonText}>{t('disconnect')}</Text>
-          </Pressable>
-        )}
-      </SafeAreaView>
-    );
-  }
-}
-
-DeviceSelection.contextType = BluetoothContext;
+      )}
+    </SafeAreaView>
+  );
+};
 
 export default withTranslation()(DeviceSelection);
