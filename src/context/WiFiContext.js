@@ -70,7 +70,7 @@ export const WiFiProvider = ({ children }) => {
 
     if (isWiFi && serialString) {
       fetchData();
-      intervalId = setInterval(fetchData, 3000);
+      intervalId = setInterval(fetchData, 4000);
     }
 
     return () => clearInterval(intervalId);
