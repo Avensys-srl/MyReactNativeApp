@@ -51,7 +51,6 @@ export const WiFiProvider = ({ children }) => {
           const pollingResponse = await axios.get(`https://g5c5rcqqjl.execute-api.eu-central-1.amazonaws.com/api/rispondi?address=${serialString}&topic=polling`);
           const debugResponse = await axios.get(`https://g5c5rcqqjl.execute-api.eu-central-1.amazonaws.com/api/rispondi?address=${serialString}&topic=debug`);
           const eepromResponse = await axios.get(`https://g5c5rcqqjl.execute-api.eu-central-1.amazonaws.com/api/rispondi?address=${serialString}&topic=eeprom`);
-
           // Aggiorna le strutture con i dati ricevuti
           pollingData.updateFromJSON(pollingResponse.data);
           debugData.updateFromJSON(debugResponse.data);
