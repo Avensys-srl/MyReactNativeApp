@@ -54,7 +54,7 @@ export const WiFiProvider = ({ children }) => {
           // Aggiorna le strutture con i dati ricevuti
           pollingData.updateFromJSON(pollingResponse.data);
           debugData.updateFromJSON(debugResponse.data);
-          if (!eepromData.hasValueChanged)
+          if (!eepromData.hasValueChanged || eepromData.hasAllValuesEqualToZero)
           {
              eepromData.updateFromJSON(eepromResponse.data);
           }
@@ -77,6 +77,12 @@ export const WiFiProvider = ({ children }) => {
   }, [isWiFi, serialString]);
 
   const updateEEPROMData = async (updates) => {
+
+    if (!isWiFi) {
+      console.log('WiFi is not connected. No Action on WiFi.');
+      return;
+    }
+
     if (!serialString) {
       console.error('Serial string is not set.');
       return;

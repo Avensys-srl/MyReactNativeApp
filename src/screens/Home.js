@@ -56,6 +56,7 @@ class Home extends Component {
     this.setState({ selectedButton: num });
     const value = num - 1;
     eepromData.sel_idxStepMotors = Number(value);
+    eepromData.ValueChange = 1;
     console.debug('SPEED INDEX', value);
 
     // Aggiornamento EEPROM data e chiamata API

@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext  } from 'react';
 import { StyleSheet, View, ScrollView, Text, Dimensions, TouchableOpacity } from 'react-native';
 import AvenVerticalBar from '../../component/AvenVerticalBar';
 import colors from '../../styles/colors';
 import { useTranslation } from 'react-i18next';
 import { eepromData } from '../../function/Data';
+import {WifiContext} from '../../context/WiFiContext';
 
 const Ventilation = () => {
   const { t } = useTranslation();
+  const { updateEEPROMData } = useContext(WifiContext);
   const [verticalBarValues, setVerticalBarValues] = useState({
     1: Math.round(eepromData.Set_StepMotorsFSC_CAF1 / 10),
     2: Math.round(eepromData.Set_StepMotorsFSC_CAF2 / 10),
@@ -50,6 +52,15 @@ const Ventilation = () => {
     eepromData.Set_StepMotorsFSC_CAF2 = verticalBarValues[2] * 10;
     eepromData.Set_StepMotorsFSC_CAF3 = verticalBarValues[3] * 10;
     eepromData.ValueChange = 1;
+
+    // Update EEPROM data via API
+    const updates = {
+      Set_StepMotorsFSC_CAF1: eepromData.Set_StepMotorsFSC_CAF1,
+      Set_StepMotorsFSC_CAF2: eepromData.Set_StepMotorsFSC_CAF2,
+      Set_StepMotorsFSC_CAF3: eepromData.Set_StepMotorsFSC_CAF3,
+    };
+    updateEEPROMData(updates);
+
   };
 
   return (
@@ -60,8 +71,8 @@ const Ventilation = () => {
           <View style={styles.line} />
         </View>
         <View style={styles.barsContainer}>
-          <AvenVerticalBar TS="1" VS={verticalBarValues[1]} Visible={true} Probes={0} onValueChange={handleValueChange} minValue={25} />
-          <AvenVerticalBar TS="2" VS={verticalBarValues[2]} Visible={true} Probes={0} onValueChange={handleValueChange} minValue={verticalBarValues[1]} />
+          <AvenVerticalBar TS="1" VS={verticalBarValues[1]} Visible={true} Probes={0} onValueChange={handleValueChange} minValue={25} maxValue={verticalBarValues[2]}/>
+          <AvenVerticalBar TS="2" VS={verticalBarValues[2]} Visible={true} Probes={0} onValueChange={handleValueChange} minValue={verticalBarValues[1]} maxValue={verticalBarValues[3]}/>
           <AvenVerticalBar TS="3" VS={verticalBarValues[3]} Visible={true} Probes={0} onValueChange={handleValueChange} minValue={verticalBarValues[2]} maxValue={100} />
         </View>
         <TouchableOpacity style={styles.button} onPress={handleSave}>
