@@ -79,6 +79,10 @@
     "set_point_airflow_co2": "Set Point Airflow CO2",
     "filter_timer": "Filter timer",
     "Editing" : "Editing",
-    "ToWiFi" : "Wifi Mode"
+    "ToWiFi" : "Wifi Mode",
+    "yes": "Yes",
+    "no": "No",
+    "warning": "Warning",
+    "WiFiOff": "Are you sure you want to switch to Bluetooth mode? Check that you have Bluetooth enabled and press yes to continue"
   }
   

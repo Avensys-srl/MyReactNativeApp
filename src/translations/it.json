@@ -68,5 +68,9 @@
   "left_configuration": "Configurazione sinistra",
   "right_configuration": "Configurazione destra",
   "green_arrow": "Freccia verde: aria esterna",
-  "ToWiFi" : "Passa al WiFi"
+  "ToWiFi" : "Passa al WiFi",
+  "yes": "Sì",
+  "no": "No",
+  "warning": "Attenzione",
+  "WiFiOff": "Sei sicuro di passare in modalità Bluetooth? Controllare di avere il Bluetooth abilitato e premere sì per continuare"
 }

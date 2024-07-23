@@ -6,15 +6,19 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import WifiManager from 'react-native-wifi-reborn';
 import { WifiData, eepromData } from '../../function/Data.js';
 import { WifiContext } from '../../context/WiFiContext';
+import { BluetoothContext } from '../../context/BluetoothContext';
+import { useNavigation } from '@react-navigation/native';
 
 const ChangeWiFi = () => {
   const { t } = useTranslation();
+  const navigation = useNavigation();
   const [ssid, setSsid] = useState('');
   const [password, setPassword] = useState('');
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(null);
   const [items, setItems] = useState([]);
   const { isWiFi, setIsWiFi, serialString, setSerialString } = useContext(WifiContext);
+  const { disconnect } = useContext(BluetoothContext);
 
   useEffect(() => {
     requestLocationPermission();
@@ -79,12 +83,37 @@ const ChangeWiFi = () => {
   };
 
   const handleWiFiSwitch = (value) => {
-    setIsWiFi(value);
-    if (value) {
-      setSerialString(eepromData.SerialString); // Salva il SerialString nel contesto solo se isWiFi è true
-      console.log('SerialString:', serialString);
+    if (!value) {
+      Alert.alert(
+        t('warning'),
+        t('WiFiOff'),
+        [
+          {
+            text: t('no'),
+            onPress: () => console.log('Switch to Bluetooth cancelled'),
+            style: 'cancel',
+          },
+          {
+            text: t('yes'),
+            onPress: () => {
+              setIsWiFi(value);
+              console.log('isWiFi:', value);
+              disconnect();
+              navigation.replace('DeviceSelection');
+            },
+          },
+        ],
+        { cancelable: false }
+      );
+    } else {
+      setIsWiFi(value);
+      disconnect();
+      if (value) {
+        setSerialString(eepromData.SerialString); // Salva il SerialString nel contesto solo se isWiFi è true
+        console.log('SerialString:', serialString);
+      }
+      console.log('isWiFi:', value);
     }
-    console.log('isWiFi:', value);
   };
 
   return (
@@ -95,7 +124,7 @@ const ChangeWiFi = () => {
           <View style={styles.line} />
         </View>
         <View style={styles.switchContainer}>
-          <Text style={styles.switchLabel}>Passa al WiFi</Text>
+          <Text style={styles.switchLabel}>{t('Passa al WiFi')}</Text>
           <Switch
             value={isWiFi}
             onValueChange={handleWiFiSwitch}
@@ -111,25 +140,27 @@ const ChangeWiFi = () => {
             setItems={setItems}
             onChangeValue={handleSelectNetwork}
             placeholder={t('select_wifi')}
-            style={styles.dropdown}
+            style={[styles.dropdown, isWiFi && styles.disabled]}
             containerStyle={styles.dropdownContainer}
             labelStyle={styles.dropdownLabel}
             dropDownContainerStyle={styles.dropdownList}
             zIndex={5000}
+            disabled={isWiFi}
           />
-          <Text style={styles.label}>{t('wifi_password')}</Text>
+          <Text style={[styles.label, isWiFi && styles.disabledLabel]}>{t('wifi_password')}</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, isWiFi && styles.disabled]}
             value={password}
             onChangeText={setPassword}
             placeholder={t('enter_password')}
             secureTextEntry
+            editable={!isWiFi}
           />
-          <TouchableOpacity style={styles.searchButton} onPress={scanForWiFiNetworks}>
-            <Text style={styles.searchButtonText}>{t('search_wifi_net')}</Text>
+          <TouchableOpacity style={[styles.searchButton, isWiFi && styles.disabledButton]} onPress={scanForWiFiNetworks} disabled={isWiFi}>
+            <Text style={[styles.searchButtonText, isWiFi && styles.disabledText]}>{t('search_wifi_net')}</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={handleSave}>
-            <Text style={styles.buttonText}>{t('save')}</Text>
+          <TouchableOpacity style={[styles.button, isWiFi && styles.disabledButton]} onPress={handleSave} disabled={isWiFi}>
+            <Text style={[styles.buttonText, isWiFi && styles.disabledText]}>{t('save')}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -234,6 +265,18 @@ const styles = StyleSheet.create({
     width: 30,
     height: 20,
     marginRight: 10,
+  },
+  disabled: {
+    opacity: 0.5,
+  },
+  disabledButton: {
+    backgroundColor: colors.gray,
+  },
+  disabledText: {
+    color: colors.darkgray,
+  },
+  disabledLabel: {
+    color: colors.gray,
   },
 });
 
