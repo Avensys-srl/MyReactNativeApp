@@ -17,9 +17,8 @@ const ServiceRoutes = () => {
     { name: 'Ventilation', component: Ventilation, labelKey: 'Ventilation', forService: false },
     { name: 'LayoutUnit', component: LayoutUnit, labelKey: 'LayoutUnit', forService: true },
     { name: 'AdvEditing', component: Editing, labelKey: 'Editing', forService: true },
-    { name: 'LiveControl', component: DataMonitor, labelKey: 'Data_Monitor', forService: true },
     { name: 'InputOutput', component: InputOutputScreen, labelKey: 'InputOutput', forService: true }, 
-    
+    { name: 'LiveControl', component: DataMonitor, labelKey: 'Data_Monitor', forService: true },
   ];
 
   const filteredRoutes = isService ? allRoutes : allRoutes.filter(route => !route.forService);

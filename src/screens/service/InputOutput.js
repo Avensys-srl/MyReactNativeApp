@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { SafeAreaView, View, Text, StyleSheet, Switch, TouchableOpacity, ScrollView, Modal } from 'react-native';
+import { SafeAreaView, View, Text, StyleSheet, Switch, TouchableOpacity, ScrollView, Modal, Alert } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import colors from '../../styles/colors';
 import { eepromData } from '../../function/Data';
 import { WifiContext } from '../../context/WiFiContext';
+import CustomSlider from '../../icons/CustomSlider'; // Assuming you have a CustomSlider component
 
 const settingsOptions = {
   inputs: ['Disable', '10V -> Unit RUN', '0V -> Unit STOP', '0-10V Air flow regulation', '10V -> Bypass Open', '0V -> Bypass Open'],
@@ -24,6 +25,11 @@ const InputOutputScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [currentSelection, setCurrentSelection] = useState(null);
   const [currentType, setCurrentType] = useState('input');
+  const [khkConfig, setKhkConfig] = useState({
+    enabled: false,
+    type: 'NC',
+    setPoint: 0,
+  });
 
   useEffect(() => {
     const initialInputs = inputs.map((input, index) => {
@@ -48,13 +54,27 @@ const InputOutputScreen = () => {
       };
     });
 
+    const khkInitialConfig = {
+      enabled: eepromData.KHK_Config === 3 || eepromData.KHK_Config === 5,
+      type: eepromData.KHK_Config === 4 || eepromData.KHK_Config === 5 ? 'NO' : 'NC',
+      setPoint: eepromData.KHK_SetPoint,
+    };
+
     setInputs(initialInputs);
     setOutputs(initialOutputs);
+    setKhkConfig(khkInitialConfig);
   }, []);
 
   const toggleInput = (id) => {
     const updatedInputs = inputs.map(input => {
       if (input.id === id) {
+        if (id === '1' && !input.enabled && khkConfig.enabled) {
+          Alert.alert(
+            t('warning'),
+            t('disable_khk_to_enable')
+          );
+          return input;
+        }
         return { ...input, enabled: !input.enabled };
       }
       return input;
@@ -121,6 +141,11 @@ const InputOutputScreen = () => {
       eepromData[`Set_Output${index + 1}`] = output.enabled ? baseIndex + outputSettings.indexOf(output.setting.toLowerCase()) : (output.type === 'NC' ? 0 : 128);
     });
 
+    eepromData.KHK_SetPoint = khkConfig.setPoint;
+    eepromData.KHK_Config = khkConfig.enabled
+      ? (khkConfig.type === 'NO' ? 5 : 3)
+      : (khkConfig.type === 'NO' ? 4 : 2);
+
     eepromData.ValueChange = 1;
 
     const updates = {
@@ -128,10 +153,27 @@ const InputOutputScreen = () => {
       Set_Input2: eepromData.Set_Input2,
       Set_Output1: eepromData.Set_Output1,
       Set_Output2: eepromData.Set_Output2,
+      KHK_SetPoint: eepromData.KHK_SetPoint,
+      KHK_Config: eepromData.KHK_Config,
     };
     updateEEPROMData(updates);
 
     console.log(eepromData); // For debugging purposes
+  };
+
+  const handleKhkToggle = () => {
+    if (!khkConfig.enabled && inputs.find(input => input.id === '1').enabled) {
+      Alert.alert(
+        t('warning'),
+        t('disable_input1_to_enable_khk')
+      );
+      return;
+    }
+    setKhkConfig(prevConfig => ({ ...prevConfig, enabled: !prevConfig.enabled }));
+  };
+
+  const toggleKhkType = () => {
+    setKhkConfig(prevConfig => ({ ...prevConfig, type: prevConfig.type === 'NO' ? 'NC' : 'NO' }));
   };
 
   const renderInputItem = (item) => (
@@ -173,15 +215,34 @@ const InputOutputScreen = () => {
     </View>
   );
 
-  const getSelectedSetting = () => {
-    if (currentType === 'input') {
-      const selectedInput = inputs.find(i => i.id === currentSelection);
-      return selectedInput ? selectedInput.setting : settingsOptions.inputs[0];
-    } else {
-      const selectedOutput = outputs.find(o => o.id === currentSelection);
-      return selectedOutput ? selectedOutput.setting : settingsOptions.outputs[0];
-    }
-  };
+  const renderKHKItem = () => (
+    <View key="khk" style={styles.itemContainer}>
+      <View style={styles.itemHeader}>
+        <Text style={styles.itemTitle}>{t('KHK')}</Text>
+        <Switch
+          value={khkConfig.enabled}
+          onValueChange={handleKhkToggle}
+        />
+      </View>
+      {khkConfig.enabled && (
+        <>
+          <TouchableOpacity style={styles.typeButton} onPress={toggleKhkType}>
+            <Text style={styles.typeButtonText}>{t(khkConfig.type)}</Text>
+          </TouchableOpacity>
+          <CustomSlider
+            title={t('setpoint')}
+            minValue={eepromData.Set_StepMotorsFSC_CAF3 / 10}
+            maxValue={100}
+            initialValue={Math.max(khkConfig.setPoint, eepromData.Set_StepMotorsFSC_CAF3 / 10 )}
+            defaultValue={100}
+            showToggle={false}
+            onValueChange={(value) => setKhkConfig(prevConfig => ({ ...prevConfig, setPoint: value }))}
+          />
+        </>
+      )}
+    </View>
+  );
+
 
   const handleSelectionChange = (value) => {
     if (currentType === 'input') {
@@ -201,6 +262,7 @@ const InputOutputScreen = () => {
         </View>
         {inputs.map(item => renderInputItem(item))}
         {outputs.map(item => renderOutputItem(item))}
+        {renderKHKItem()}
         <TouchableOpacity style={styles.saveButton} onPress={saveSettings}>
           <Text style={styles.saveButtonText}>{t('save')}</Text>
         </TouchableOpacity>
@@ -261,7 +323,7 @@ const styles = StyleSheet.create({
     borderColor: colors.lightgray,
     borderWidth: 1,
     padding: 16,
-    borderRadius: 8,
+    borderRadius: 5,
     marginBottom: 16,
   },
   itemHeader: {
@@ -282,7 +344,7 @@ const styles = StyleSheet.create({
   settingButton: {
     backgroundColor: colors.lightblue,
     padding: 10,
-    borderRadius: 8,
+    borderRadius: 5,
     alignItems: 'center',
     marginTop: 10,
   },
@@ -290,7 +352,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     backgroundColor: colors.lightblue,
     padding: 10,
-    borderRadius: 8,
+    borderRadius: 5,
     alignItems: 'center',
   },
   typeButtonText: {
@@ -300,7 +362,7 @@ const styles = StyleSheet.create({
   saveButton: {
     backgroundColor: colors.lightblue,
     padding: 10,
-    borderRadius: 8,
+    borderRadius: 5,
     alignItems: 'center',
     marginTop: 20,
     marginBottom: 30,

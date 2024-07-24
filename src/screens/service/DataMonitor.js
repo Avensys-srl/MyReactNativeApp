@@ -93,12 +93,12 @@ class DataMonitor extends Component {
           <InfoText descr={t('rh_level')} value={RH + ' %'} />
           <InfoText descr={t('co2_level')} value={CO2 + ' PPM'} />
           <InfoText descr={t('voc_level')} value={VOC + ' PPM'} />
-          <InfoText descr={t('bypass')} value={Bypass === 0 ? t('automatic') : Bypass === 3 ? t('open') : Bypass === 4 ? t('close') : 'Unknown'} />
+          <InfoText descr={t('bypass')} value={Bypass === 0 ? t('automatic') : Bypass === 3 ? t('opened') : Bypass === 4 ? t('closed') : 'Unknown'} />
           <InfoText descr={t('Level Input 1')} value={input1} />
           <InfoText descr={t('Level Input 2')} value={input2} />
-          <InfoText descr={t('wifi_ssid')} value={wifi} />
           <InfoText descr={t('KHK_config')} value={khk_config} />
           <InfoText descr={t('KHK_setpoint')} value={khk_setpoint} />
+          <InfoText descr={t('wifi_ssid')} value={wifi} />
         </ScrollView>
       </SafeAreaView>
     );

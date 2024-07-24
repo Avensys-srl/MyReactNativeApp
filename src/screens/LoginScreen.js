@@ -101,14 +101,14 @@ const LoginScreen = () => {
           style={styles.input}
           placeholder={t('username')}
           value={username}
-          onChangeText={setUsername}
+          onChangeText={(text) => setUsername(text.trimEnd())}
         />
         <TextInput
           style={styles.input}
           placeholder={t('password')}
           value={password}
           secureTextEntry
-          onChangeText={setPassword}
+          onChangeText={(text) => setPassword(text.trimEnd())}
         />
         <View style={styles.checkboxContainer}>
           <BouncyCheckbox
