@@ -92,5 +92,10 @@
   "KHK": "KHK",
   "setpoint": "Sollwert",
   "opened": "Geöffnet",
-  "closed": "Geschlossen"
+  "closed": "Geschlossen",
+  "SetPointTemp": "Solltemperatur",
+  "Bypass_minTempExt": "Umschalttemperatur",
+  "Config_Bypass": "Bypass-Einstellung",
+  "night_cooling": "Nachtkühlung"
+
 }

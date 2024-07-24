@@ -92,5 +92,10 @@
   "KHK": "KHK",
   "setpoint": "Livello di regolazione",
   "opened": "Aperto",
-  "closed": "Chiuso"
+  "closed": "Chiuso",
+  "SetPointTemp": "Temperatura Punto di Regolazione",
+  "Bypass_minTempExt": "Temperatura di Cambio",
+  "Config_Bypass": "Impostazione Bypass",
+  "night_cooling": "Raffreddamento Notturno"
+
 }

@@ -218,6 +218,71 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     padding: 16,
   },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContainer: {
+    width: '80%',
+    backgroundColor: colors.white,
+    borderRadius: 8,
+    padding: 20,
+    alignItems: 'center',
+    elevation: 5,
+  },
+  modalTitle: {
+    fontSize: 20,
+    marginBottom: 20,
+    fontWeight: 'bold',
+  },
+  modalOptionButton: {
+    backgroundColor: colors.lightblue,
+    padding: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginVertical: 5,
+    width: '100%',
+  },
+  modalOptionText: {
+    color: colors.white,
+    fontSize: 16,
+  },
+  closeButton: {
+    backgroundColor: colors.lightblue,
+    padding: 10,
+    borderRadius: 8,
+    marginTop: 20,
+  },
+  closeButtonText: {
+    color: colors.white,
+    fontSize: 16,
+  },
+  itemContainer: {
+    margin: 16,
+    padding: 16,
+    backgroundColor: colors.white,
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  itemHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  itemTitle: {
+    fontSize: 18,
+    color: colors.black,
+  },
 });
 
 export default styles;

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, ScrollView, Text } from 'react-native';
+import { View, ScrollView, Text, TouchableOpacity, Modal } from 'react-native';
 import styles from '../../styles/styles.js';
 import { eepromData } from '../../function/Data.js';
 import CustomSlider from '../../icons/CustomSlider.js';
@@ -19,8 +19,12 @@ class Editing extends Component {
       SetPoint_RH: 0,
       SetPoint_VOC: 0,
       SetPoint_Airflow_CO2: 0,
-      Filter_timer: 0,
+      gg_manut_Filter: 0,
+      Bypass_minTempExt: 0,
+      SetPointTemp1: 0,
+      Config_Bypass: 0,
       isDataLoaded: false,
+      modalVisible: false,
     };
   }
 
@@ -36,7 +40,10 @@ class Editing extends Component {
                               eepromData.SetPoint_RH !== undefined &&
                               eepromData.SetPoint_VOC !== undefined &&
                               eepromData.SetPoint_Airflow_CO2 !== undefined &&
-                              eepromData.gg_manut_Filter !== undefined;
+                              eepromData.gg_manut_Filter !== undefined &&
+                              eepromData.Bypass_minTempExt !== undefined &&
+                              eepromData.SetPointTemp1 !== undefined &&
+                              eepromData.Config_Bypass !== undefined;
 
       if (isDataAvailable) {
         this.setState({
@@ -48,7 +55,10 @@ class Editing extends Component {
           SetPoint_RH: eepromData.SetPoint_RH,
           SetPoint_VOC: eepromData.SetPoint_VOC,
           SetPoint_Airflow_CO2: eepromData.SetPoint_Airflow_CO2,
-          Filter_timer: eepromData.gg_manut_Filter,
+          gg_manut_Filter: eepromData.gg_manut_Filter,
+          Bypass_minTempExt: eepromData.Bypass_minTempExt / 10,
+          SetPointTemp1: eepromData.SetPointTemp1 / 10,
+          Config_Bypass: eepromData.Config_Bypass,
           isDataLoaded: true,
         });
         clearInterval(this.updateInterval);
@@ -61,9 +71,12 @@ class Editing extends Component {
   }
 
   handleValueChange = (key, value) => {
+    const isTemperatureKey = ['Bypass_minTempExt', 'SetPointTemp1'].includes(key);
+    const adjustedValue = isTemperatureKey ? value * 10 : value;
+
     this.setState({ [key]: value });
-    eepromData.setValueByKey(key, Number(value));
-    console.log(key, " : ", Number(value));
+    eepromData.setValueByKey(key, Number(adjustedValue));
+    console.log(key, " : ", Number(adjustedValue));
     const { updateEEPROMData } = this.context;
     const updates = {
       Set_Imbalance1: eepromData.Set_Imbalance1,
@@ -73,14 +86,17 @@ class Editing extends Component {
       SetPoint_RH: eepromData.SetPoint_RH,
       SetPoint_VOC: eepromData.SetPoint_VOC,
       SetPoint_Airflow_CO2: eepromData.SetPoint_Airflow_CO2,
-      Filter_timer: eepromData.Filter_timer,
+      gg_manut_Filter: eepromData.gg_manut_Filter,
+      Bypass_minTempExt: eepromData.Bypass_minTempExt,
+      SetPointTemp1: eepromData.SetPointTemp1,
+      Config_Bypass: eepromData.Config_Bypass,
     };
     updateEEPROMData(updates);
   };
 
   handleToggleChange = () => {
     eepromData.toggleImbalance();
-    eepromData.ValueChange=1;
+    eepromData.ValueChange = 1;
     const { updateEEPROMData } = this.context;
     const updates = {
       Enab_Fuction1: eepromData.Enab_Fuction1,
@@ -89,12 +105,27 @@ class Editing extends Component {
     this.setState({ isImbalanced: eepromData.isImbalanceEnabled() });
   };
 
+  openModal = () => {
+    this.setState({ modalVisible: true });
+  };
+
+  closeModal = () => {
+    this.setState({ modalVisible: false });
+  };
+
+  handleBypassConfigChange = (value) => {
+    this.setState({ Config_Bypass: value, modalVisible: false });
+    this.handleValueChange('Config_Bypass', value);
+  };
+
   render() {
     const { t } = this.props;
-    const { isDataLoaded } = this.state;
+    const { isDataLoaded, modalVisible, Config_Bypass } = this.state;
 
     const slidersConfig = [
-        { key: 'Filter_timer', title: t('filter_timer'), minValue: 30, maxValue: 180, defaultValue: 180, showToggle: false },
+        { key: 'gg_manut_Filter', title: t('filter_timer'), minValue: 30, maxValue: 180, defaultValue: 180, showToggle: false },
+        { key: 'SetPointTemp1', title: t('SetPointTemp'), minValue: 12, maxValue: 35, defaultValue: 22, showToggle: false },
+        { key: 'Bypass_minTempExt', title: t('Bypass_minTempExt'), minValue: 12, maxValue: 35, defaultValue: 16, showToggle: false },
         { key: 'SetPoint_RH', title: t('set_point_rh'), minValue: 20, maxValue: 99, defaultValue: 70, showToggle: false },
         { key: 'SetPoint_CO2', title: t('set_point_co2'), minValue: 700, maxValue: 1500, defaultValue: 750, showToggle: false },
         { key: 'SetPoint_Airflow_CO2', title: t('set_point_airflow_co2'), minValue: 25, maxValue: 100, defaultValue: 100, showToggle: false },
@@ -106,7 +137,7 @@ class Editing extends Component {
         <ScrollView>
           {!isDataLoaded ? (
             <View style={styles.header}>
-              <Text style={styles.title}>{t('data_loading')}</Text>
+              <Text style={styles.title}>{t('loading_data')}</Text>
               <View style={styles.line} />
             </View>
           ) : (
@@ -137,9 +168,43 @@ class Editing extends Component {
                 onToggleChange={this.handleToggleChange}
                 onValueChange={(value) => this.handleValueChange('Set_Imbalance1', value)}
               />
+              <View style={styles.itemContainer}>
+                <Text style={styles.itemTitle}>{t('Config_Bypass')}</Text>
+                <TouchableOpacity style={styles.settingButton} onPress={this.openModal}>
+                  <Text style={styles.settingText}>
+                    {Config_Bypass === 0 ? t('automatic') :
+                     Config_Bypass === 1 ? t('night_cooling') :
+                     Config_Bypass === 2 ? t('closed') : t('opened')}
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
           )}
         </ScrollView>
+        <Modal
+          visible={modalVisible}
+          transparent={true}
+          animationType="slide"
+          onRequestClose={this.closeModal}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContainer}>
+              <Text style={styles.modalTitle}>{t('select_option')}</Text>
+              {['automatic', 'night_cooling', 'closed', 'opened'].map((option, index) => (
+                <TouchableOpacity
+                  key={option}
+                  style={styles.modalOptionButton}
+                  onPress={() => this.handleBypassConfigChange(index)}
+                >
+                  <Text style={styles.modalOptionText}>{t(option)}</Text>
+                </TouchableOpacity>
+              ))}
+              <TouchableOpacity style={styles.closeButton} onPress={this.closeModal}>
+                <Text style={styles.closeButtonText}>{t('close')}</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
       </View>
     );
   }

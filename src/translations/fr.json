@@ -92,6 +92,11 @@
   "KHK": "KHK",
   "setpoint": "Point de consigne",
   "opened": "Ouvert",
-  "closed": "Fermé"
+  "closed": "Fermé",
+  "SetPointTemp": "Température du Point de Consigne",
+  "Bypass_minTempExt": "Température de Commutation",
+  "Config_Bypass": "Réglage du Bypass",
+  "night_cooling": "Refroidissement Nocturne"
+
 
 }

@@ -92,5 +92,9 @@
   "KHK": "KHK",
   "setpoint": "Setpoint",
   "opened": "Opened",
-  "closed": "Closed"
+  "closed": "Closed",
+  "SetPointTemp": "Set Point Temperature",
+  "Bypass_minTempExt": "Change Over temperature",
+  "Config_Bypass": "Bypass Setting",
+  "night_cooling": "Night Cooling"
 }
