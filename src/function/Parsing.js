@@ -234,9 +234,9 @@ export function parseUint8ArrayToEEPROM(uint8Array) {
       uint8Array[112],
       uint8Array[113],
     );
+    eepromData.KHK_Config = uint8Array[114];
+    eepromData.KHK_SetPoint = uint8Array[115];
     eepromData.endUserPassword = String.fromCharCode(
-      uint8Array[114],
-      uint8Array[115],
       uint8Array[116],
       uint8Array[117],
       uint8Array[118],
@@ -431,12 +431,12 @@ export function convertEEPROMToUint8Array(eepromData) {
   for (let i = 0; i < 5; i++) {
     uint8Array[109 + i] = eepromData.servicePassword.charCodeAt(i);
   }
-
+  uint8Array[114] = eepromData.KHK_Config;
+  uint8Array[115] = eepromData.KHK_SetPoint;
   // Inverso di eepromData.endUserPassword
-  for (let i = 0; i < 5; i++) {
-    uint8Array[114 + i] = eepromData.endUserPassword.charCodeAt(i);
+  for (let i = 0; i < 3; i++) {
+    uint8Array[116 + i] = eepromData.endUserPassword.charCodeAt(i);
   }
-
   uint8Array[119] = eepromData.calibra_CAP & 0xff;
   uint8Array[120] = eepromData.calibra_CAP >> 8;
   uint8Array[121] = eepromData.manual_Reset;

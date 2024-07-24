@@ -7,7 +7,7 @@ import {
 } from 'react-native';
 import styles from '../../styles/styles.js';
 import { eepromData, pollingData, debugData, WifiData } from '../../function/Data.js';
-import { InfoText, EditableInfoRow } from '../../icons/Controls.js';
+import { InfoText } from '../../icons/Controls.js';
 import { withTranslation } from 'react-i18next';
 
 class DataMonitor extends Component {
@@ -30,6 +30,10 @@ class DataMonitor extends Component {
       boost: eepromData.isBoostEnabled(),
       alarm: pollingData.getAlarmString(),
       pulse: eepromData.numPulseMotors,
+      khk_config: eepromData.KHK_Config,
+      khk_setpoint: eepromData.KHK_SetPoint,
+      input1: pollingData.MeasInput1,
+      input2: pollingData.MeasInput2,
     };
   }
 
@@ -52,6 +56,10 @@ class DataMonitor extends Component {
         boost: eepromData.isBoostEnabled(),
         alarm: pollingData.getAlarmString(),
         pulse: eepromData.numPulseMotors,
+        khk_config: eepromData.KHK_Config,
+        khk_setpoint: eepromData.KHK_SetPoint,
+        input1: pollingData.MeasInput1,
+        input2: pollingData.MeasInput2,
       });
     }, 1000);
   }
@@ -64,7 +72,8 @@ class DataMonitor extends Component {
     const { t } = this.props;
     const {
       TR, TS, TF, TE, speedR, speedF, airflow,
-      Bypass, CO2, RH, VOC, wifi, password, boost, alarm, pulse,
+      Bypass, CO2, RH, VOC, wifi, password, boost, alarm, pulse, khk_config, khk_setpoint,
+      input1, input2, 
     } = this.state;
 
     return (
@@ -85,7 +94,11 @@ class DataMonitor extends Component {
           <InfoText descr={t('co2_level')} value={CO2 + ' PPM'} />
           <InfoText descr={t('voc_level')} value={VOC + ' PPM'} />
           <InfoText descr={t('bypass')} value={Bypass === 0 ? t('automatic') : Bypass === 3 ? t('open') : Bypass === 4 ? t('close') : 'Unknown'} />
+          <InfoText descr={t('Level Input 1')} value={input1} />
+          <InfoText descr={t('Level Input 2')} value={input2} />
           <InfoText descr={t('wifi_ssid')} value={wifi} />
+          <InfoText descr={t('KHK_config')} value={khk_config} />
+          <InfoText descr={t('KHK_setpoint')} value={khk_setpoint} />
         </ScrollView>
       </SafeAreaView>
     );

@@ -59,9 +59,9 @@ export const WiFiProvider = ({ children }) => {
              eepromData.updateFromJSON(eepromResponse.data);
           }
 
-          console.log('Polling data:', pollingResponse.data);
-          console.log('Debug data:', debugResponse.data);
-          console.log('EEPROM data:', eepromResponse.data);
+          console.log('Polling data read');
+          console.log('Debug data read');
+          console.log('EEPROM data read');
         } catch (error) {
           console.error('Failed to fetch data from API.', error);
         }

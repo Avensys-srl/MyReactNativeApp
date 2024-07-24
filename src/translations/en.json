@@ -83,6 +83,8 @@
     "yes": "Yes",
     "no": "No",
     "warning": "Warning",
-    "WiFiOff": "Are you sure you want to switch to Bluetooth mode? Check that you have Bluetooth enabled and press yes to continue"
+    "WiFiOff": "Are you sure you want to switch to Bluetooth mode? Check that you have Bluetooth enabled and press yes to continue",
+    "WiFiOn": "You have not chosen the wifi network, proceed with the default or previously saved network?",
+    "InputOutput": "Inputs and Outputs"
   }
   

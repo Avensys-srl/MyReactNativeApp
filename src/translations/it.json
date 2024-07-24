@@ -26,8 +26,8 @@
   "boost_on": "Boost ON",
   "boost_off": "Boost OFF",
   "bypass_control": "Controllo bypass",
-  "close": "Chiudere",
-  "open": "Aprire",
+  "close": "Chiudi",
+  "open": "Apri",
   "automatic": "Automatico",
   "alarm_list": "Lista allarmi",
   "return_temp": "Temperatura di ritorno",
@@ -72,5 +72,7 @@
   "yes": "Sì",
   "no": "No",
   "warning": "Attenzione",
-  "WiFiOff": "Sei sicuro di passare in modalità Bluetooth? Controllare di avere il Bluetooth abilitato e premere sì per continuare"
+  "WiFiOff": "Sei sicuro di passare in modalità Bluetooth? Controllare di avere il Bluetooth abilitato e premere sì per continuare",
+  "WiFiOn": "Non hai scelto la rete wifi, procedere con la rete predefinita o salvata in precedenza?",
+  "save": "Salva"
 }

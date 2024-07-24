@@ -66,6 +66,8 @@ class EEPROM_DATA_TAG {
     this.SetPoint_VOC = 0;
     this.gg_manut_Filter = 0;
     this.servicePassword = 0;
+    this.KHK_Config = 0;
+    this.KHK_SetPoint = 0;
     this.endUserPassword = 0;
     this.calibra_CAP = 0;
     this.manual_Reset = 0;
@@ -137,6 +139,14 @@ class EEPROM_DATA_TAG {
 
   toggleBoost() {
     this.Enab_Fuction1 ^= 2;
+  }
+
+  isImbalanceEnabled() {
+    return (this.Enab_Fuction1 & 16) !== 0;
+  }
+
+  toggleImbalance() {
+    this.Enab_Fuction1 ^= 16;
   }
 
   setValueByKey(key, value) {

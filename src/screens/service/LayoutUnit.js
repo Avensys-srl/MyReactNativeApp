@@ -1,24 +1,43 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, ScrollView, Text, Dimensions, TouchableOpacity, Modal, Image } from 'react-native';
+import React, { useState, useEffect, useContext } from 'react';
+import { StyleSheet, View, ScrollView, Text, Dimensions, TouchableOpacity, Modal, Image, Alert } from 'react-native';
 import colors from '../../styles/colors';
 import { useTranslation } from 'react-i18next';
 import { eepromData } from '../../function/Data';
+import { WifiContext } from '../../context/WiFiContext';
 
 const LayoutUnit = () => {
   const { t } = useTranslation();
+  const { updateEEPROMData } = useContext(WifiContext);
   const [selectedUnit, setSelectedUnit] = useState('left'); // 'left' or 'right'
   const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
-    // Assuming eepromData contains information about the selected unit
-    setSelectedUnit(eepromData.unitConfig || 'left');
+    if (eepromData.Posiz_NTC === 228) {
+      setSelectedUnit('left');
+    } else if (eepromData.Posiz_NTC === 78) {
+      setSelectedUnit('right');
+    } else {
+      Alert.alert(t('error'), t('Invalid Posiz_NTC value'));
+    }
   }, []);
 
   const handleUnitChange = (unit) => {
+    if (unit === 'left') {
+      eepromData.Posiz_NTC = 228;
+    } else if (unit === 'right') {
+      eepromData.Posiz_NTC = 78;
+    } else {
+      Alert.alert(t('error'), t('Invalid unit value'));
+      return;
+    }
+
     setSelectedUnit(unit);
-    eepromData.unitConfig = unit; // Update eeprom data structure
     eepromData.ValueChange = 1;
     setModalVisible(false);
+
+    // Update EEPROM data via API
+    const updates = { Posiz_NTC: eepromData.Posiz_NTC };
+    updateEEPROMData(updates);
   };
 
   return (
@@ -29,13 +48,13 @@ const LayoutUnit = () => {
           <View style={styles.line} />
         </View>
         <View style={styles.contentContainer}>
-        <Text style={styles.unitText}>{t('green_arrow')}</Text>
+          <Text style={styles.unitText}>{t('green_arrow')}</Text>
           <TouchableOpacity onPress={() => setModalVisible(true)}>
             <Image
               source={selectedUnit === 'left' ? require('../../assets/412_DRAW_QUARK_FL_D.png') : require('../../assets/411_DRAW_QUARK_FL_C.png')}
               style={styles.unitImage}
             />
-            <Text style={styles.unitText}>{ selectedUnit === 'left' ? t('left_configuration') : t('right_configuration')}</Text>
+            <Text style={styles.unitText}>{selectedUnit === 'left' ? t('left_configuration') : t('right_configuration')}</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -111,7 +130,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontSize: 18,
     color: colors.black,
-    textAlign: 'center'
+    textAlign: 'center',
   },
   modalOverlay: {
     flex: 1,

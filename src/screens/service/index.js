@@ -3,9 +3,10 @@ import React, { useContext } from 'react';
 import Ventilation from './Ventilation';
 import LayoutUnit from './LayoutUnit';
 import { ProfileContext } from '../../context/ProfileContext';
-import InfoScreen from '../InfoScreen';
+//import InfoScreen from '../InfoScreen';
 import DataMonitor from './DataMonitor';
 import Editing from './Editing';
+import InputOutputScreen from './InputOutput';
 
 const ServiceRoutes = () => {
   const { isService } = useContext(ProfileContext);
@@ -16,8 +17,8 @@ const ServiceRoutes = () => {
     { name: 'Ventilation', component: Ventilation, labelKey: 'Ventilation', forService: false },
     { name: 'LayoutUnit', component: LayoutUnit, labelKey: 'LayoutUnit', forService: true },
     { name: 'AdvEditing', component: Editing, labelKey: 'Editing', forService: true },
-    //{ name: 'AllData', component: InfoScreen, labelKey: 'All_data', forService: true },
     { name: 'LiveControl', component: DataMonitor, labelKey: 'Data_Monitor', forService: true },
+    { name: 'InputOutput', component: InputOutputScreen, labelKey: 'InputOutput', forService: true }, 
     
   ];
 

@@ -8,7 +8,6 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { eepromData, pollingData } from '../function/Data.js';
-import { convertEEPROMToUint8Array } from '../function/Parsing.js';
 import styles from '../styles/styles.js';
 import { withTranslation } from 'react-i18next';
 import colors from '../styles/colors.js';
@@ -31,7 +30,12 @@ class Home extends Component {
       boost: null,
       alarm: null,
       showAlarmList: false,
+      blink: false,  // Stato per il lampeggiamento del tasto 3
     };
+
+    this.pressStartTime = null;
+    this.pressTimer = null;
+    this.blinkInterval = null;
   }
 
   static contextType = ProfileContext;
@@ -39,31 +43,75 @@ class Home extends Component {
   componentDidMount() {
     this.updateInterval = setInterval(() => {
       const alarm = pollingData.getAlarmString();
+      const boostEnabled = eepromData.isBoostEnabled();
+
       this.setState({
         isWarningActive: alarm !== "",
         alarm: alarm,
-        selectedButton: eepromData.sel_idxStepMotors + 1,
-        boost: eepromData.isBoostEnabled(),
+        selectedButton: boostEnabled ? 3 : (eepromData.sel_idxStepMotors + 1),
+        boost: boostEnabled,
       });
+
+      if (boostEnabled && !this.blinkInterval) {
+        this.startBlinking();
+      } else if (!boostEnabled && this.blinkInterval) {
+        this.stopBlinking();
+      }
     }, 1000);
   }
 
   componentWillUnmount() {
     clearInterval(this.updateInterval);
+    this.stopBlinking();
   }
 
-  handleNumberButtonPress = (num) => {
-    this.setState({ selectedButton: num });
-    const value = num - 1;
-    eepromData.sel_idxStepMotors = Number(value);
-    eepromData.ValueChange = 1;
-    console.debug('SPEED INDEX', value);
+  startBlinking = () => {
+    this.blinkInterval = setInterval(() => {
+      this.setState(prevState => ({ blink: !prevState.blink }));
+    }, 500);
+  };
 
-    // Aggiornamento EEPROM data e chiamata API
+  stopBlinking = () => {
+    clearInterval(this.blinkInterval);
+    this.blinkInterval = null;
+    this.setState({ blink: false });
+  };
+
+  handleNumberButtonPress = (num) => {
+    if (num === 1 || num === 2) {
+      if (this.state.boost) return;  // Disabilita i tasti 1 e 2 se boost è abilitato
+    }
+
+    this.setState({ selectedButton: num });
     const { wifiContext } = this.props;
     const { updateEEPROMData } = wifiContext;
-    const updates = { sel_idxStepMotors: value };
-    updateEEPROMData(updates);
+
+    if (this.pressStartTime) {
+      const pressDuration = new Date().getTime() - this.pressStartTime;
+      if (pressDuration > 3000) {
+        console.log('Press duration:', pressDuration);
+        eepromData.toggleBoost();
+        console.debug('Boost: ', eepromData.isBoostEnabled());
+        eepromData.ValueChange = 1;
+        const updates = { Enab_Fuction1: eepromData.Enab_Fuction1 };
+        updateEEPROMData(updates);
+      }else {
+        const value = num - 1;
+        eepromData.sel_idxStepMotors = Number(value);
+        eepromData.ValueChange = 1;
+        console.debug('SPEED INDEX', value);
+        const updates = { sel_idxStepMotors: value };
+        updateEEPROMData(updates);
+      }
+      this.pressStartTime = null;
+    } else {
+      const value = num - 1;
+      eepromData.sel_idxStepMotors = Number(value);
+      eepromData.ValueChange = 1;
+      console.debug('SPEED INDEX', value);
+      const updates = { sel_idxStepMotors: value };
+      updateEEPROMData(updates);
+    }
   }
 
   handleOtherButtonPress = (num) => {
@@ -75,8 +123,24 @@ class Home extends Component {
     console.debug('OTHER BUTTON PRESS', num);
   }
 
+  handlePressIn = (num) => {
+    if (num === 3) {
+      this.pressStartTime = new Date().getTime();
+      this.pressTimer = setTimeout(() => {
+        console.log('Button 3 held for 3 seconds');
+      }, 3000);
+    }
+  }
+
+  handlePressOut = (num) => {
+    if (num === 3) {
+      clearTimeout(this.pressTimer);
+      this.pressTimer = null;
+    }
+  }
+
   renderButtonContent(num) {
-    const { selectedButton } = this.state;
+    const { selectedButton, blink } = this.state;
     const isSelected = selectedButton === num;
 
     if ([4, 5, 6].includes(num)) {
@@ -134,6 +198,8 @@ class Home extends Component {
         default:
           return null;
       }
+    } else if (num === 3 && this.state.boost && blink) {
+      return null;  // Rende il tasto 3 "invisibile" quando lampeggia
     } else {
       return <Text style={[homeStyles.buttonText, { color: isSelected ? colors.white : colors.lightgray }]}>{num}</Text>;
     }
@@ -142,7 +208,7 @@ class Home extends Component {
   render() {
     const { t } = this.props;
     const { selectedButton, showAlarmList } = this.state;
-    const { isService } = this.context; // Ottieni il valore di isService dal contesto
+    const { isService } = this.context;
 
     return (
       <SafeAreaView style={styles.body}>
@@ -159,8 +225,10 @@ class Home extends Component {
                   num >= 4 ? { borderColor: colors.white } : { borderColor: selectedButton === num ? colors.white : colors.lightgray },
                   num >= 4 ? homeStyles.rightAlignedButton : {},
                 ]}
+                onPressIn={() => this.handlePressIn(num)}
+                onPressOut={() => this.handlePressOut(num)}
                 onPress={() => num >= 4 ? this.handleOtherButtonPress(num) : this.handleNumberButtonPress(num)}
-                disabled={num === 6 && !isService} // Disabilita il pulsante 6 se isService è false
+                disabled={((num === 1 || num === 2) && this.state.boost) || (num === 6 && !isService)}
               >
                 {this.renderButtonContent(num)}
               </TouchableOpacity>

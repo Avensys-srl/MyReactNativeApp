@@ -106,13 +106,40 @@ const ChangeWiFi = () => {
         { cancelable: false }
       );
     } else {
-      setIsWiFi(value);
-      disconnect();
-      if (value) {
-        setSerialString(eepromData.SerialString); // Salva il SerialString nel contesto solo se isWiFi è true
-        console.log('SerialString:', serialString);
+      if (!ssid || !password) {
+        Alert.alert(
+          t('warning'),
+          t('WiFiOn'),
+          [
+            {
+              text: t('no'),
+              onPress: () => console.log('Switch to WiFi cancelled'),
+              style: 'cancel',
+            },
+            {
+              text: t('yes'),
+              onPress: () => {
+                setIsWiFi(value);
+                if (value) {
+                  setSerialString(eepromData.SerialString); // Salva il SerialString nel contesto solo se isWiFi è true
+                  console.log('SerialString:', serialString);
+                }
+                console.log('isWiFi:', value);
+                disconnect();
+              },
+            },
+          ],
+          { cancelable: false }
+        );
+      } else {
+        setIsWiFi(value);
+        disconnect();
+        if (value) {
+          setSerialString(eepromData.SerialString); // Salva il SerialString nel contesto solo se isWiFi è true
+          console.log('SerialString:', serialString);
+        }
+        console.log('isWiFi:', value);
       }
-      console.log('isWiFi:', value);
     }
   };
 

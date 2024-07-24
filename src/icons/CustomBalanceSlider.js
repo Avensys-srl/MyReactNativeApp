@@ -3,11 +3,11 @@ import { View, Text, Switch, StyleSheet, TouchableOpacity } from 'react-native';
 import Slider from '@react-native-community/slider';
 import PropTypes from 'prop-types';
 import LinearGradient from 'react-native-linear-gradient';
-import colors from '../styles/colors'; // Assicurati di avere il file colors.js o modifica i colori come preferisci
+import colors from '../styles/colors';
 
-const CustomBalanceSlider = ({ title, minValue, maxValue, initialValue, showToggle, onToggleChange, onValueChange }) => {
+const CustomBalanceSlider = ({ title, minValue, maxValue, initialValue, showToggle, onToggleChange, initialToggle, onValueChange }) => {
   const [value, setValue] = useState(initialValue);
-  const [isEnabled, setIsEnabled] = useState(true);
+  const [isEnabled, setIsEnabled] = useState(initialToggle);
 
   const toggleSwitch = () => {
     const newValue = !isEnabled;
@@ -92,11 +92,11 @@ const CustomBalanceSlider = ({ title, minValue, maxValue, initialValue, showTogg
             style={styles.slider}
             minimumValue={minValue}
             maximumValue={maxValue}
-            step={1} // Aggiunge lo step minimo di 1
-            minimumTrackTintColor="transparent" // Rimuovi il colore di base della traccia
-            maximumTrackTintColor="transparent" // Rimuovi il colore di base della traccia
+            step={1}
+            minimumTrackTintColor="transparent"
+            maximumTrackTintColor="transparent"
             thumbTintColor={colors.thumbColor}
-            thumbStyle={styles.thumb} // Aggiungi il bordo
+            thumbStyle={styles.thumb}
             value={value}
             onValueChange={handleValueChange}
             onSlidingComplete={handleSlidingComplete}
@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: colors.white,
-    fontSize: 18, // Dimensione del font maggiore
+    fontSize: 18,
   },
   buttonReset: {
     backgroundColor: colors.lightgray,
