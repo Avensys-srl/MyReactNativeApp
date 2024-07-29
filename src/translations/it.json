@@ -96,6 +96,7 @@
   "SetPointTemp": "Temperatura Punto di Regolazione",
   "Bypass_minTempExt": "Temperatura di Cambio",
   "Config_Bypass": "Impostazione Bypass",
-  "night_cooling": "Raffreddamento Notturno"
-
+  "night_cooling": "Raffreddamento Notturno",
+  "Accessory": "Gestione accessori",
+  "Status_Unit": "Stato dell'unità"
 }

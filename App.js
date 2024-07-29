@@ -161,7 +161,6 @@ function App() {
           <I18nextProvider i18n={i18n}>
             <NavigationContainer theme={AppTheme}>
               <SafeAreaView style={styles.body}>
-                <StatusBar barStyle="dark-content" />
                 <Stack.Navigator initialRouteName="SplashScreen">
                   <Stack.Screen
                     name="SplashScreen"

@@ -96,7 +96,7 @@
   "SetPointTemp": "Température du Point de Consigne",
   "Bypass_minTempExt": "Température de Commutation",
   "Config_Bypass": "Réglage du Bypass",
-  "night_cooling": "Refroidissement Nocturne"
-
-
+  "night_cooling": "Refroidissement Nocturne",
+  "Accessory": "Gestionnaire d'accessoires",
+  "Status_Unit": "État de l'unité"
 }

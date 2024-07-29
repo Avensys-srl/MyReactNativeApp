@@ -7,6 +7,7 @@ import { ProfileContext } from '../../context/ProfileContext';
 import DataMonitor from './DataMonitor';
 import Editing from './Editing';
 import InputOutputScreen from './InputOutput';
+import AccessoryScreen from './Accessory';
 
 const ServiceRoutes = () => {
   const { isService } = useContext(ProfileContext);
@@ -17,7 +18,8 @@ const ServiceRoutes = () => {
     { name: 'Ventilation', component: Ventilation, labelKey: 'Ventilation', forService: false },
     { name: 'LayoutUnit', component: LayoutUnit, labelKey: 'LayoutUnit', forService: true },
     { name: 'AdvEditing', component: Editing, labelKey: 'Editing', forService: true },
-    { name: 'InputOutput', component: InputOutputScreen, labelKey: 'InputOutput', forService: true }, 
+    { name: 'InputOutput', component: InputOutputScreen, labelKey: 'InputOutput', forService: true },
+    { name: 'Accessory', component: AccessoryScreen, labelKey: 'Accessory', forService: true },
     { name: 'LiveControl', component: DataMonitor, labelKey: 'Data_Monitor', forService: true },
   ];
 

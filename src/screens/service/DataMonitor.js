@@ -34,6 +34,7 @@ class DataMonitor extends Component {
       khk_setpoint: eepromData.KHK_SetPoint,
       input1: pollingData.MeasInput1,
       input2: pollingData.MeasInput2,
+      status: pollingData.getStatusUnit(),
     };
   }
 
@@ -60,6 +61,7 @@ class DataMonitor extends Component {
         khk_setpoint: eepromData.KHK_SetPoint,
         input1: pollingData.MeasInput1,
         input2: pollingData.MeasInput2,
+        status: pollingData.getStatusUnit(),
       });
     }, 1000);
   }
@@ -72,7 +74,7 @@ class DataMonitor extends Component {
     const { t } = this.props;
     const {
       TR, TS, TF, TE, speedR, speedF, airflow,
-      Bypass, CO2, RH, VOC, wifi, password, boost, alarm, pulse, khk_config, khk_setpoint,
+      Bypass, CO2, RH, VOC, wifi, password, boost, alarm, pulse, khk_config, khk_setpoint, status, 
       input1, input2, 
     } = this.state;
 
@@ -98,6 +100,7 @@ class DataMonitor extends Component {
           <InfoText descr={t('Level Input 2')} value={input2} />
           <InfoText descr={t('KHK_config')} value={khk_config} />
           <InfoText descr={t('KHK_setpoint')} value={khk_setpoint} />
+          <InfoText descr={t('Status_Unit')} value={status} />
           <InfoText descr={t('wifi_ssid')} value={wifi} />
         </ScrollView>
       </SafeAreaView>

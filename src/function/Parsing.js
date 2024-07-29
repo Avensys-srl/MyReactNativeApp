@@ -27,6 +27,8 @@ const EN_FUNC2 = [
   'PASSWORD',
 ];
 
+
+
 export function convertUint8ArrayToByteArray(uint8Array) {
   const byteArray = Array.from(uint8Array);
   return byteArray;

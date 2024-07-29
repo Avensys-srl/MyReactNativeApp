@@ -96,5 +96,7 @@
   "SetPointTemp": "Set Point Temperature",
   "Bypass_minTempExt": "Change Over temperature",
   "Config_Bypass": "Bypass Setting",
-  "night_cooling": "Night Cooling"
+  "night_cooling": "Night Cooling",
+  "Accessory": "Accessory manager",
+  "Status_Unit": "Unit status"
 }

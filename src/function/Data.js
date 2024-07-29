@@ -254,6 +254,8 @@ class POLLING_DATA_TAG {
     this.cntUpdate_eeprom_settemp = 0;
     this.cntUpdate_eeprom_weekly = 0;
     this.MeasAWP = 0;
+    this.StatusUnit_check1 = 0;
+    this.StatusUnit_check2 = 0;
   }
 
   updateFromJSON(json) {
@@ -285,6 +287,49 @@ class POLLING_DATA_TAG {
     const alarmCodes = this.analyzeAlarms();
     return alarmCodes.join(' ');
   }
+
+ 
+  getStatusUnit() {
+    const STATUS1 = [
+      { name: 'RUNNING', on: 'Unit ON', off: 'Standby' },
+      { name: 'DEFROST', on: 'Defrost', off: '' },
+      { name: 'POST_VENT', on: 'Post_Vent', off: '' },
+      { name: 'IMBALANCE', on: 'Imbalance', off: '' },
+      { name: 'BOOST', on: 'Boost', off: '' },
+      { name: 'BOOST_KHK', on: 'Boost_Khk', off: '' },
+      { name: 'BYPASS_MOV', on: 'Bypass moving', off: '' },
+      { name: 'BYPASS_STATUS', on: 'bypass close', off: 'bypass open' },
+      { name: 'INPUT_FAN_REG', on: 'Input_Fan_Reg', off: '' },
+      { name: 'MAX_RH', on: 'Over RH', off: '' },
+      { name: 'MAX_CO2', on: 'Over CO2', off: '' },
+      { name: 'MAX_VOC', on: 'Over VOC', off: '' },
+      { name: 'TEST', on: 'Testing', off: '' },
+      { name: 'DPP_CHECK', on: 'DPP checking', off: '' },
+      { name: 'UPDATE_AVAILABLE', on: 'Update_Available', off: 'No update available' },
+      { name: '---', on: '---', off: '' }
+    ];
+  
+    const statusValue = this.StatusUnit;
+  
+    // Convert the statusValue to a 16-bit binary string
+    const binaryString = statusValue.toString(2).padStart(16, '0');
+  
+    const activeStatuses = [];
+  
+    // Iterate over the binary string from right to left
+    for (let i = 0; i < binaryString.length; i++) {
+      const status = STATUS1[i];
+      if (binaryString[binaryString.length - 1 - i] === '1') {
+        activeStatuses.push(status.on);
+      } else if (status.off) {
+        activeStatuses.push(status.off);
+      }
+    }
+  
+    console.log(activeStatuses);
+    return activeStatuses;
+  }
+
 }
 
 class WIFI_TAG {
