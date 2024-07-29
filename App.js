@@ -1,8 +1,8 @@
-import React from 'react';
-import { NavigationContainer, CommonActions } from '@react-navigation/native';
+import React, { useEffect } from 'react';
+import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Image, StyleSheet } from 'react-native';
+import { Image, StyleSheet, SafeAreaView, StatusBar, Appearance } from 'react-native';
 import Home from './src/screens/Home.js'; 
 import AdvEditing from './src/screens/AdvEditing.js';
 import SplashScreen from './src/screens/SplashScreen.js';
@@ -24,6 +24,15 @@ import ServiceMenu from './src/screens/ServiceMenu.js';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
+
+const AppTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    background: '#FFFFFF',
+    text: '#000000',
+  },
+};
 
 function createResetStackNavigator(StackComponent, initialRouteName) {
   return function ResetStackNavigator({ navigation }) {
@@ -122,37 +131,60 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
   },
+  body: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 16,
+    backgroundColor: '#FFFFFF',
+  },
+  text: {
+    color: '#000000',
+  },
 });
 
 function App() {
+  // Forza il tema chiaro all'inizio del componente funzionale
+  useEffect(() => {
+    // Forza il tema chiaro
+    Appearance.setColorScheme('light');
+  }, []);
+
   return (
     <ProfileProvider>
       <BluetoothProvider>
         <WiFiProvider>
           <I18nextProvider i18n={i18n}>
-            <NavigationContainer>
-              <Stack.Navigator initialRouteName="SplashScreen">
-                <Stack.Screen
-                  name="SplashScreen"
-                  component={SplashScreen}
-                  options={{ headerShown: false }}
-                />
-                <Stack.Screen
-                  name="LoginScreen"
-                  component={LoginScreen}
-                  options={{ headerShown: false }}
-                />
-                <Stack.Screen
-                  name="DeviceSelection"
-                  component={DeviceSelection}
-                  options={{ headerShown: false }}
-                />
-                <Stack.Screen
-                  name="MainTabs"
-                  component={MainTabs}
-                  options={{ headerShown: false }}
-                />
-              </Stack.Navigator>
+            <NavigationContainer theme={AppTheme}>
+              <SafeAreaView style={styles.body}>
+                <StatusBar barStyle="dark-content" />
+                <Stack.Navigator initialRouteName="SplashScreen">
+                  <Stack.Screen
+                    name="SplashScreen"
+                    component={SplashScreen}
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="LoginScreen"
+                    component={LoginScreen}
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="DeviceSelection"
+                    component={DeviceSelection}
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="MainTabs"
+                    component={MainTabs}
+                    options={{ headerShown: false }}
+                  />
+                </Stack.Navigator>
+              </SafeAreaView>
             </NavigationContainer>
           </I18nextProvider>
         </WiFiProvider>
