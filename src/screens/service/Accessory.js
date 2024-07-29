@@ -25,6 +25,7 @@ const AccessoryScreen = () => {
     eepromData.AccessoyHW2 = newHW2;
     eepromData.AccessoyHW3 = newHW3;
     eepromData.AccessoyHW4 = newHW4;
+    eepromData.ValueChange = 1;
     updateEEPROMData({
       AccessoyHW1: newHW1,
       AccessoyHW2: newHW2,
