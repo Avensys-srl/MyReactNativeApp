@@ -98,5 +98,6 @@
   "Config_Bypass": "Réglage du Bypass",
   "night_cooling": "Refroidissement Nocturne",
   "Accessory": "Gestionnaire d'accessoires",
-  "Status_Unit": "État de l'unité"
+  "Status_Unit": "État de l'unité",
+  "Enable Wifi": "Activer le Wi-Fi"
 }

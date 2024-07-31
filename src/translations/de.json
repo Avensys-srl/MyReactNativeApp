@@ -98,6 +98,7 @@
   "Config_Bypass": "Bypass-Einstellung",
   "night_cooling": "Nachtkühlung",
   "Accessory": "Zubehör-Manager",
-  "Status_Unit": "Gerätestatus"
+  "Status_Unit": "Gerätestatus",
+  "Enable Wifi": "Wi-Fi aktivieren"
 
 }

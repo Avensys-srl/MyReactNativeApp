@@ -151,7 +151,7 @@ const ChangeWiFi = () => {
           <View style={styles.line} />
         </View>
         <View style={styles.switchContainer}>
-          <Text style={styles.switchLabel}>{t('Passa al WiFi')}</Text>
+          <Text style={styles.switchLabel}>{t('Enable Wifi')}</Text>
           <Switch
             value={isWiFi}
             onValueChange={handleWiFiSwitch}

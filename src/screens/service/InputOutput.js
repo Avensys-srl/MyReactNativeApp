@@ -7,7 +7,7 @@ import { WifiContext } from '../../context/WiFiContext';
 import CustomSlider from '../../icons/CustomSlider'; // Assuming you have a CustomSlider component
 
 const settingsOptions = {
-  inputs: ['Disable', '10V -> Unit RUN', '0V -> Unit STOP', '0-10V Air flow regulation', '10V -> Bypass Open', '0V -> Bypass Open'],
+  inputs: ['Disable', '10V -> Unit RUN', '0V -> Unit STOP', '0-10V Air flow regulation', '10V -> Bypass Open', '0V -> Bypass Open', '10V -> Boost ON'],
   outputs: ['Disable', 'Bypass Opened', 'Generic Alarm', 'Unit run'],
 };
 
@@ -243,7 +243,6 @@ const InputOutputScreen = () => {
     </View>
   );
 
-
   const handleSelectionChange = (value) => {
     if (currentType === 'input') {
       handleInputSettingChange(currentSelection, value);
@@ -251,6 +250,13 @@ const InputOutputScreen = () => {
       handleOutputSettingChange(currentSelection, value);
     }
     setModalVisible(false);
+  };
+
+  const getFilteredInputOptions = () => {
+    if (currentSelection === '2') {
+      return settingsOptions.inputs;
+    }
+    return settingsOptions.inputs.filter(option => option !== '10V -> Boost ON');
   };
 
   return (
@@ -276,7 +282,7 @@ const InputOutputScreen = () => {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
             <Text style={styles.modalTitle}>{t('Select Option')}</Text>
-            {(currentType === 'input' ? settingsOptions.inputs : settingsOptions.outputs).map(option => (
+            {(currentType === 'input' ? getFilteredInputOptions() : settingsOptions.outputs).map(option => (
               <TouchableOpacity
                 key={option}
                 style={styles.modalOptionButton}

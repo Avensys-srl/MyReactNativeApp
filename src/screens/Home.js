@@ -6,6 +6,7 @@ import {
   Image,
   StyleSheet,
   TouchableOpacity,
+  Dimensions,
 } from 'react-native';
 import { eepromData, pollingData } from '../function/Data.js';
 import styles from '../styles/styles.js';
@@ -31,6 +32,7 @@ class Home extends Component {
       alarm: null,
       showAlarmList: false,
       blink: false,  // Stato per il lampeggiamento del tasto 3
+      screenWidth: Dimensions.get('window').width, // Ottieni la larghezza dello schermo
     };
 
     this.pressStartTime = null;
@@ -58,12 +60,22 @@ class Home extends Component {
         this.stopBlinking();
       }
     }, 1000);
+
+    // Aggiungi un listener per aggiornare la larghezza dello schermo quando cambia
+    Dimensions.addEventListener('change', this.handleScreenResize);
   }
 
   componentWillUnmount() {
     clearInterval(this.updateInterval);
     this.stopBlinking();
+
+    // Rimuovi il listener quando il componente viene smontato
+    Dimensions.removeEventListener('change', this.handleScreenResize);
   }
+
+  handleScreenResize = ({ window }) => {
+    this.setState({ screenWidth: window.width });
+  };
 
   startBlinking = () => {
     this.blinkInterval = setInterval(() => {
@@ -207,8 +219,11 @@ class Home extends Component {
 
   render() {
     const { t } = this.props;
-    const { selectedButton, showAlarmList } = this.state;
+    const { selectedButton, showAlarmList, screenWidth } = this.state;
     const { isService } = this.context;
+
+    // Calcola la larghezza del contenitore blackBox
+    const blackBoxWidth = screenWidth > 400 ? 0.95 * 400 : '380';
 
     return (
       <SafeAreaView style={styles.body}>
@@ -216,7 +231,7 @@ class Home extends Component {
           <Image source={require('../assets/logo.png')} style={homeStyles.logo} />
         </View>
         <View style={homeStyles.centerContainer}>
-          <View style={homeStyles.blackBox}>
+          <View style={[homeStyles.blackBox, { width: blackBoxWidth }]}>
             {[3, 4, 2, 5, 1, 6].map((num) => (
               <TouchableOpacity
                 key={num}
@@ -239,7 +254,7 @@ class Home extends Component {
           <View style={homeStyles.alarmListContainer}>
             <InfoText descr={t('alarm_list')} value={this.state.alarm} textcolor="red" />
           </View>
-        )}
+        )} 
       </SafeAreaView>
     );
   }
@@ -262,7 +277,6 @@ const homeStyles = StyleSheet.create({
     alignItems: 'center',
   },
   blackBox: {
-    width: '95%',
     aspectRatio: 1,
     backgroundColor: colors.black,
     borderRadius: 10,
