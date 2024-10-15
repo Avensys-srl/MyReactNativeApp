@@ -87,6 +87,17 @@ function convertUint8ToSignedInt(uint8Value) {
   }
 }
 
+function convertUint16ToSignedInt(uint16Value) {
+  if (uint16Value > 32767) {
+    // Sottrai 65536 per convertire da Uint16 a Int16
+    return uint16Value - 65536;
+  } else {
+    // Il valore è già positivo
+    return uint16Value;
+  }
+}
+
+
 function convertSignedIntToUint8(signedInt) {
   // Se il valore è negativo, aggiungi 256 per convertirlo in un Uint8
   if (signedInt < 0) {
@@ -532,10 +543,10 @@ export function parseUint8ArrayToPolling(uint8Array) {
     throw new Error('Data array is not valid');
   }
 
-  pollingData.MeasTemp1F = (uint8Array[1] << 8) | uint8Array[0];
-  pollingData.MeasTemp2R = (uint8Array[3] << 8) | uint8Array[2];
-  pollingData.MeasTemp3S = (uint8Array[5] << 8) | uint8Array[4];
-  pollingData.MeasTemp4E = (uint8Array[7] << 8) | uint8Array[6];
+  pollingData.MeasTemp1F = convertUint16ToSignedInt((uint8Array[1] << 8) | uint8Array[0]);
+  pollingData.MeasTemp2R = convertUint16ToSignedInt((uint8Array[3] << 8) | uint8Array[2]);
+  pollingData.MeasTemp3S = convertUint16ToSignedInt((uint8Array[5] << 8) | uint8Array[4]);
+  pollingData.MeasTemp4E = convertUint16ToSignedInt((uint8Array[7] << 8) | uint8Array[6]);
   pollingData.MeasInput1 = uint8Array[8];
   pollingData.MeasInput2 = uint8Array[9];
   pollingData.InfoProbeIAQ = uint8Array[10];
@@ -557,7 +568,7 @@ export function parseUint8ArrayToPolling(uint8Array) {
   pollingData.Alarm10 = uint8Array[29];
   pollingData.Alarm11 = uint8Array[30];
   pollingData.Alarm12 = uint8Array[31];
-  pollingData.none = uint8Array[32];
+  pollingData.Alarm13 = uint8Array[32];
   pollingData.IncreaseSpeedIAQ = uint8Array[33];
   pollingData.cntUpdate_eeprom_info = uint8Array[34];
   pollingData.cntUpdate_eeprom_settingpar = uint8Array[35];

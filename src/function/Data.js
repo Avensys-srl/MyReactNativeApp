@@ -247,7 +247,7 @@ class POLLING_DATA_TAG {
     this.Alarm10 = 0;
     this.Alarm11 = 0;
     this.Alarm12 = 0;
-    this.none = 0;
+    this.Alarm13 = 0;
     this.IncreaseSpeedIAQ = 0;
     this.cntUpdate_eeprom_info = 0;
     this.cntUpdate_eeprom_settingpar = 0;
@@ -269,7 +269,7 @@ class POLLING_DATA_TAG {
   analyzeAlarms() {
     const alarmCodes = [];
 
-    for (let i = 0; i <= 12; i++) {
+    for (let i = 0; i <= 13; i++) {
       const alarmValue = this[`Alarm${String(i).padStart(2, '0')}`];
       const bits = alarmValue.toString(2).padStart(8, '0').split('').reverse();
 

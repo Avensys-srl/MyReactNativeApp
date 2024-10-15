@@ -173,8 +173,9 @@ class Editing extends Component {
                 <TouchableOpacity style={styles.settingButton} onPress={this.openModal}>
                   <Text style={styles.settingText}>
                     {Config_Bypass === 0 ? t('automatic') :
-                     Config_Bypass === 1 ? t('night_cooling') :
-                     Config_Bypass === 2 ? t('closed') : t('opened')}
+                     Config_Bypass === 1 ? t('external') :
+                     Config_Bypass === 2 ? t('closed') :
+                     Config_Bypass === 3 ? t('opened') : t('night_cooling')}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -190,14 +191,16 @@ class Editing extends Component {
           <View style={styles.modalOverlay}>
             <View style={styles.modalContainer}>
               <Text style={styles.modalTitle}>{t('select_option')}</Text>
-              {['automatic', 'night_cooling', 'closed', 'opened'].map((option, index) => (
-                <TouchableOpacity
-                  key={option}
-                  style={styles.modalOptionButton}
-                  onPress={() => this.handleBypassConfigChange(index)}
-                >
-                  <Text style={styles.modalOptionText}>{t(option)}</Text>
-                </TouchableOpacity>
+              {['automatic', 'external', 'closed', 'opened', 'night_cooling'].map((option, index) => (
+                option !== 'external' && ( // Condizione per saltare 'external'
+                  <TouchableOpacity
+                    key={option}
+                    style={styles.modalOptionButton}
+                    onPress={() => this.handleBypassConfigChange(index)}
+                  >
+                    <Text style={styles.modalOptionText}>{t(option)}</Text>
+                  </TouchableOpacity>
+                )
               ))}
               <TouchableOpacity style={styles.closeButton} onPress={this.closeModal}>
                 <Text style={styles.closeButtonText}>{t('close')}</Text>
